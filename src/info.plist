@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>bundleid</key>
-	<string>de.xdevcloud.alfred-repos</string>
+	<string>com.sherifabdlnaby.alfred-repos</string>
 	<key>connections</key>
 	<dict>
 		<key>13C4EEDF-EC8D-4B23-8693-6E050109AFDC</key>
@@ -86,7 +86,7 @@
 		</array>
 	</dict>
 	<key>createdby</key>
-	<string>Thomas Harr</string>
+	<string>Sherif Abdel-Naby</string>
 	<key>description</key>
 	<string>Find and browse Git repositories</string>
 	<key>disabled</key>
@@ -259,7 +259,7 @@ variables={allvars}</string>
 				<key>escaping</key>
 				<integer>127</integer>
 				<key>script</key>
-				<string>open 'https://github.com/harrtho/alfred-repos/blob/main/README.md'</string>
+				<string>open 'https://github.com/sherifabdlnaby/alfred-repos/blob/main/README.md'</string>
 				<key>scriptargtype</key>
 				<integer>1</integer>
 				<key>scriptfile</key>
@@ -460,8 +460,8 @@ Use the `reposhelp` command to see the help file.</string>
 		<string>180</string>
 	</dict>
 	<key>version</key>
-	<string>4.3.0</string>
+	<string>1.3.37</string>
 	<key>webaddress</key>
-	<string>https://github.com/harrtho/alfred-repos</string>
+	<string>https://github.com/sherifabdlnaby/alfred-repos</string>
 </dict>
 </plist>

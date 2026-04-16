@@ -179,8 +179,7 @@ Please use [GitHub issues][gh-issues] to report bugs or request features.
 
 ## Contributors
 
-This Alfred Workflow comes from the [abandoned Workflow][abandoned-workflow] of
-[Dean Jackson][deanishe]
+This Alfred Workflow is a fork of [harrtho/alfred-repos](https://github.com/harrtho/alfred-repos) by [Thomas Harr](https://github.com/harrtho), which itself continued the [abandoned workflow](https://github.com/deanishe/alfred-repos) by [Dean Jackson](https://github.com/deanishe).
 
 ## License
 
@@ -195,21 +194,18 @@ The workflow uses the following icons:
 
 - [git-scm.com][git] ([Creative Commons Attribution 3.0 Unported License][license-cc])
 
-[abandoned-workflow]: https://github.com/deanishe/alfred-repos
 [alfred-config-sheet]: https://www.alfredapp.com/help/workflows/advanced/variables/#environment
 [alfred-pyworkflow]: https://github.com/harrtho/alfred-pyworkflow
 [alfred]: https://www.alfredapp.com
-[deanishe]: https://github.com/deanishe
 [docopt]: https://github.com/docopt/docopt
-[gh-issues]: https://github.com/harrtho/alfred-repos/issues
-[gh-latest-release]: https://github.com/harrtho/alfred-repos/releases/latest
-[gh-releases]: https://github.com/harrtho/alfred-repos/releases
+[gh-issues]: https://github.com/sherifabdlnaby/alfred-repos/issues
+[gh-latest-release]: https://github.com/sherifabdlnaby/alfred-repos/releases/latest
+[gh-releases]: https://github.com/sherifabdlnaby/alfred-repos/releases
 [git]: https://git-scm.com/downloads/logos
-[jlong]: https://twitter.com/jasonlong
 [license-cc]: https://creativecommons.org/licenses/by/3.0/
 [license-docopt]: https://github.com/docopt/docopt/blob/master/LICENSE-MIT
 [license-mit]: https://opensource.org/licenses/MIT
 [preview]: img/preview.png
-[shield-downloads]: https://img.shields.io/github/downloads/harrtho/alfred-repos/total.svg
-[shield-license]: https://img.shields.io/github/license/harrtho/alfred-repos.svg
-[shield-version]: https://img.shields.io/github/release/harrtho/alfred-repos.svg
+[shield-downloads]: https://img.shields.io/github/downloads/sherifabdlnaby/alfred-repos/total.svg
+[shield-license]: https://img.shields.io/github/license/sherifabdlnaby/alfred-repos.svg
+[shield-version]: https://img.shields.io/github/release/sherifabdlnaby/alfred-repos.svg
