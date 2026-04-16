@@ -45,19 +45,6 @@
 				<false/>
 			</dict>
 		</array>
-		<key>25BDF5B8-CC9C-444A-B35A-CD0ED5D35A84</key>
-		<array>
-			<dict>
-				<key>destinationuid</key>
-				<string>E36B8788-0F7C-494A-A3D5-3347CA273F85</string>
-				<key>modifiers</key>
-				<integer>0</integer>
-				<key>modifiersubtext</key>
-				<string></string>
-				<key>vitoclose</key>
-				<false/>
-			</dict>
-		</array>
 		<key>71820CCE-FF52-4077-B790-ACA80D174C54</key>
 		<array>
 			<dict>
@@ -215,50 +202,6 @@ variables={allvars}</string>
 				<key>escaping</key>
 				<integer>127</integer>
 				<key>script</key>
-				<string>/usr/bin/env python3 repos.py settings</string>
-				<key>scriptargtype</key>
-				<integer>1</integer>
-				<key>scriptfile</key>
-				<string></string>
-				<key>type</key>
-				<integer>0</integer>
-			</dict>
-			<key>type</key>
-			<string>alfred.workflow.action.script</string>
-			<key>uid</key>
-			<string>E36B8788-0F7C-494A-A3D5-3347CA273F85</string>
-			<key>version</key>
-			<integer>2</integer>
-		</dict>
-		<dict>
-			<key>config</key>
-			<dict>
-				<key>argumenttype</key>
-				<integer>2</integer>
-				<key>keyword</key>
-				<string>reposettings</string>
-				<key>subtext</key>
-				<string>Change search directories, exclude patterns</string>
-				<key>text</key>
-				<string>Edit Repo Settings</string>
-				<key>withspace</key>
-				<false/>
-			</dict>
-			<key>type</key>
-			<string>alfred.workflow.input.keyword</string>
-			<key>uid</key>
-			<string>25BDF5B8-CC9C-444A-B35A-CD0ED5D35A84</string>
-			<key>version</key>
-			<integer>1</integer>
-		</dict>
-		<dict>
-			<key>config</key>
-			<dict>
-				<key>concurrently</key>
-				<false/>
-				<key>escaping</key>
-				<integer>127</integer>
-				<key>script</key>
 				<string>open 'https://github.com/sherifabdlnaby/alfred-repos/blob/main/README.md'</string>
 				<key>scriptargtype</key>
 				<integer>1</integer>
@@ -341,32 +284,42 @@ variables={allvars}</string>
 		</dict>
 	</array>
 	<key>readme</key>
-	<string>Browse, search and open Git repositories from within Alfred.
+	<string>Browse, search, and open Git repositories from within Alfred.
 
-You must configure your settings with `reposettings` before use.
+GETTING STARTED
 
-Use `reposhelp` for detailed instructions.
+1. Click "Configure Workflow..." above
+2. Under 🖥️ pick apps to open repos with
+   (e.g. Default App = VS Code, Cmd App = iTerm)
+3. Under 📂 pick folders containing your Git repos
+   (e.g. Search Directory 1 = ~/code, Depth = 2)
+4. Type "repos" in Alfred and start searching!
 
+USAGE
 
-Usage
------
+  repos &lt;query&gt;    Search your Git repositories
+    ↩              Open in Default App
+    ⌘↩             Open in Cmd App
+    ⌥↩             Open in Alt App
+    ^↩             Open in Ctrl App
+    ⇧↩             Open in Shift App
+    fn↩            Open in Fn App
 
-- `repos [&lt;query&gt;]` — Show a list of your Git repos filtered by `&lt;query&gt;`
-	+ `↩` — Open selected repo in `app_default`
-	+ `⌘+↩` — Open selected repo in `app_cmd`
-	+ `⌥+↩` — Open selected repo in `app_alt`
-	+ `^+↩` — Open selected repo in `app_ctrl`
-	+ `⇧+↩` — Open selected repo in `app_shift`
-	+ `fn+↩` — Open selected repo in `app_fn`
-- `reposettings` — Open `settings.json` in default JSON editor
-- `reposupdate` — Force workflow to update its cached list of repositories. (By default, the list will only be updated every 3 hours.)
-- `reposhelp` — Open this file in your browser
+  reposupdate      Force refresh the repo list
+  reposhelp        Open help in your browser
 
+CUSTOM REPO ICONS
 
-Configuration
--------------
+Place a file named .alfred-repos-icon.png in the parent directory of a repo to give it a custom icon in results.
 
-Use the `reposhelp` command to see the help file.</string>
+Example: if your repo is at ~/code/my-project, place the icon at ~/code/.alfred-repos-icon.png. All repos in ~/code/ will use that icon.
+
+TIPS
+
+- Browser apps (Chrome, Safari, Firefox, Arc, etc.) will open the repo's remote URL instead of the local folder.
+- Set "Remote Name" to choose which git remote to use (default: origin).
+- Use "Global Exclude Patterns" to skip directories like node_modules or .cache across all search directories.
+- Use "reposupdate" after changing your search directories to refresh immediately.</string>
 	<key>uidata</key>
 	<dict>
 		<key>13C4EEDF-EC8D-4B23-8693-6E050109AFDC</key>
@@ -374,91 +327,910 @@ Use the `reposhelp` command to see the help file.</string>
 			<key>note</key>
 			<string>Open help file in your browser</string>
 			<key>xpos</key>
-			<real>40</real>
+			<real>40.0</real>
 			<key>ypos</key>
-			<real>370</real>
+			<real>370.0</real>
 		</dict>
 		<key>227B191C-26EA-4302-B5A1-79CBA4BF107A</key>
 		<dict>
 			<key>note</key>
 			<string>Force update of repo list</string>
 			<key>xpos</key>
-			<real>40</real>
+			<real>40.0</real>
 			<key>ypos</key>
-			<real>540</real>
+			<real>540.0</real>
 		</dict>
 		<key>25B07D69-2EF2-420F-8B3B-0E7E7CA7B34F</key>
 		<dict>
 			<key>note</key>
 			<string>Open repo in specified app</string>
 			<key>xpos</key>
-			<real>300</real>
+			<real>300.0</real>
 			<key>ypos</key>
-			<real>30</real>
-		</dict>
-		<key>25BDF5B8-CC9C-444A-B35A-CD0ED5D35A84</key>
-		<dict>
-			<key>note</key>
-			<string>Open settings in your default editor</string>
-			<key>xpos</key>
-			<real>40</real>
-			<key>ypos</key>
-			<real>200</real>
+			<real>30.0</real>
 		</dict>
 		<key>47FD6543-A4A6-4714-B190-9DF8B5B28444</key>
 		<dict>
 			<key>xpos</key>
-			<real>300</real>
+			<real>300.0</real>
 			<key>ypos</key>
-			<real>540</real>
+			<real>540.0</real>
 		</dict>
 		<key>71820CCE-FF52-4077-B790-ACA80D174C54</key>
 		<dict>
 			<key>note</key>
 			<string>View/filter git repos</string>
 			<key>xpos</key>
-			<real>40</real>
+			<real>40.0</real>
 			<key>ypos</key>
-			<real>30</real>
+			<real>30.0</real>
 		</dict>
 		<key>CB04399E-A00E-40F1-8753-994DF261B93C</key>
 		<dict>
 			<key>xpos</key>
-			<real>210</real>
+			<real>210.0</real>
 			<key>ypos</key>
-			<real>60</real>
+			<real>60.0</real>
 		</dict>
 		<key>D2D75AF8-15E1-40D8-84D1-AE23BA5263F4</key>
 		<dict>
 			<key>note</key>
 			<string>Show error message</string>
 			<key>xpos</key>
-			<real>480</real>
+			<real>480.0</real>
 			<key>ypos</key>
-			<real>30</real>
-		</dict>
-		<key>E36B8788-0F7C-494A-A3D5-3347CA273F85</key>
-		<dict>
-			<key>xpos</key>
-			<real>300</real>
-			<key>ypos</key>
-			<real>200</real>
+			<real>30.0</real>
 		</dict>
 		<key>FC60057D-548A-4394-9426-1764C21DC6F0</key>
 		<dict>
 			<key>xpos</key>
-			<real>300</real>
+			<real>300.0</real>
 			<key>ypos</key>
-			<real>370</real>
+			<real>370.0</real>
 		</dict>
 	</dict>
 	<key>userconfigurationconfig</key>
-	<array/>
+	<array>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>default</key>
+				<string>finder</string>
+				<key>pairs</key>
+				<array>
+					<array>
+						<string>None</string>
+						<string>none</string>
+					</array>
+					<array>
+						<string>Finder</string>
+						<string>finder</string>
+					</array>
+					<array>
+						<string>Terminal</string>
+						<string>terminal</string>
+					</array>
+					<array>
+						<string>Default Browser</string>
+						<string>browser</string>
+					</array>
+					<array>
+						<string>Custom App</string>
+						<string>custom</string>
+					</array>
+				</array>
+			</dict>
+			<key>description</key>
+			<string>How to open repos with Enter</string>
+			<key>label</key>
+			<string>🖥️ Default App  ↩</string>
+			<key>type</key>
+			<string>popupbutton</string>
+			<key>variable</key>
+			<string>app_default</string>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>default</key>
+				<string></string>
+				<key>filtermode</key>
+				<integer>0</integer>
+				<key>placeholder</key>
+				<string></string>
+				<key>required</key>
+				<false/>
+			</dict>
+			<key>description</key>
+			<string>Pick the .app to use (only when set to "Custom App" above)</string>
+			<key>label</key>
+			<string>🖥️ Default App Path</string>
+			<key>type</key>
+			<string>filepicker</string>
+			<key>variable</key>
+			<string>app_default_path</string>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>default</key>
+				<string>none</string>
+				<key>pairs</key>
+				<array>
+					<array>
+						<string>None</string>
+						<string>none</string>
+					</array>
+					<array>
+						<string>Finder</string>
+						<string>finder</string>
+					</array>
+					<array>
+						<string>Terminal</string>
+						<string>terminal</string>
+					</array>
+					<array>
+						<string>Default Browser</string>
+						<string>browser</string>
+					</array>
+					<array>
+						<string>Custom App</string>
+						<string>custom</string>
+					</array>
+				</array>
+			</dict>
+			<key>description</key>
+			<string>How to open repos with ⌘+Enter</string>
+			<key>label</key>
+			<string>🖥️ Cmd App  ⌘↩</string>
+			<key>type</key>
+			<string>popupbutton</string>
+			<key>variable</key>
+			<string>app_cmd</string>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>default</key>
+				<string></string>
+				<key>filtermode</key>
+				<integer>0</integer>
+				<key>placeholder</key>
+				<string></string>
+				<key>required</key>
+				<false/>
+			</dict>
+			<key>description</key>
+			<string>Pick the .app to use (only when set to "Custom App" above)</string>
+			<key>label</key>
+			<string>🖥️ Cmd App Path</string>
+			<key>type</key>
+			<string>filepicker</string>
+			<key>variable</key>
+			<string>app_cmd_path</string>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>default</key>
+				<string>none</string>
+				<key>pairs</key>
+				<array>
+					<array>
+						<string>None</string>
+						<string>none</string>
+					</array>
+					<array>
+						<string>Finder</string>
+						<string>finder</string>
+					</array>
+					<array>
+						<string>Terminal</string>
+						<string>terminal</string>
+					</array>
+					<array>
+						<string>Default Browser</string>
+						<string>browser</string>
+					</array>
+					<array>
+						<string>Custom App</string>
+						<string>custom</string>
+					</array>
+				</array>
+			</dict>
+			<key>description</key>
+			<string>How to open repos with ⌥+Enter</string>
+			<key>label</key>
+			<string>🖥️ Alt App  ⌥↩</string>
+			<key>type</key>
+			<string>popupbutton</string>
+			<key>variable</key>
+			<string>app_alt</string>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>default</key>
+				<string></string>
+				<key>filtermode</key>
+				<integer>0</integer>
+				<key>placeholder</key>
+				<string></string>
+				<key>required</key>
+				<false/>
+			</dict>
+			<key>description</key>
+			<string>Pick the .app to use (only when set to "Custom App" above)</string>
+			<key>label</key>
+			<string>🖥️ Alt App Path</string>
+			<key>type</key>
+			<string>filepicker</string>
+			<key>variable</key>
+			<string>app_alt_path</string>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>default</key>
+				<string>none</string>
+				<key>pairs</key>
+				<array>
+					<array>
+						<string>None</string>
+						<string>none</string>
+					</array>
+					<array>
+						<string>Finder</string>
+						<string>finder</string>
+					</array>
+					<array>
+						<string>Terminal</string>
+						<string>terminal</string>
+					</array>
+					<array>
+						<string>Default Browser</string>
+						<string>browser</string>
+					</array>
+					<array>
+						<string>Custom App</string>
+						<string>custom</string>
+					</array>
+				</array>
+			</dict>
+			<key>description</key>
+			<string>How to open repos with ^+Enter</string>
+			<key>label</key>
+			<string>🖥️ Ctrl App  ^↩</string>
+			<key>type</key>
+			<string>popupbutton</string>
+			<key>variable</key>
+			<string>app_ctrl</string>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>default</key>
+				<string></string>
+				<key>filtermode</key>
+				<integer>0</integer>
+				<key>placeholder</key>
+				<string></string>
+				<key>required</key>
+				<false/>
+			</dict>
+			<key>description</key>
+			<string>Pick the .app to use (only when set to "Custom App" above)</string>
+			<key>label</key>
+			<string>🖥️ Ctrl App Path</string>
+			<key>type</key>
+			<string>filepicker</string>
+			<key>variable</key>
+			<string>app_ctrl_path</string>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>default</key>
+				<string>none</string>
+				<key>pairs</key>
+				<array>
+					<array>
+						<string>None</string>
+						<string>none</string>
+					</array>
+					<array>
+						<string>Finder</string>
+						<string>finder</string>
+					</array>
+					<array>
+						<string>Terminal</string>
+						<string>terminal</string>
+					</array>
+					<array>
+						<string>Default Browser</string>
+						<string>browser</string>
+					</array>
+					<array>
+						<string>Custom App</string>
+						<string>custom</string>
+					</array>
+				</array>
+			</dict>
+			<key>description</key>
+			<string>How to open repos with ⇧+Enter</string>
+			<key>label</key>
+			<string>🖥️ Shift App  ⇧↩</string>
+			<key>type</key>
+			<string>popupbutton</string>
+			<key>variable</key>
+			<string>app_shift</string>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>default</key>
+				<string></string>
+				<key>filtermode</key>
+				<integer>0</integer>
+				<key>placeholder</key>
+				<string></string>
+				<key>required</key>
+				<false/>
+			</dict>
+			<key>description</key>
+			<string>Pick the .app to use (only when set to "Custom App" above)</string>
+			<key>label</key>
+			<string>🖥️ Shift App Path</string>
+			<key>type</key>
+			<string>filepicker</string>
+			<key>variable</key>
+			<string>app_shift_path</string>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>default</key>
+				<string>none</string>
+				<key>pairs</key>
+				<array>
+					<array>
+						<string>None</string>
+						<string>none</string>
+					</array>
+					<array>
+						<string>Finder</string>
+						<string>finder</string>
+					</array>
+					<array>
+						<string>Terminal</string>
+						<string>terminal</string>
+					</array>
+					<array>
+						<string>Default Browser</string>
+						<string>browser</string>
+					</array>
+					<array>
+						<string>Custom App</string>
+						<string>custom</string>
+					</array>
+				</array>
+			</dict>
+			<key>description</key>
+			<string>How to open repos with fn+Enter</string>
+			<key>label</key>
+			<string>🖥️ Fn App  fn↩</string>
+			<key>type</key>
+			<string>popupbutton</string>
+			<key>variable</key>
+			<string>app_fn</string>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>default</key>
+				<string></string>
+				<key>filtermode</key>
+				<integer>0</integer>
+				<key>placeholder</key>
+				<string></string>
+				<key>required</key>
+				<false/>
+			</dict>
+			<key>description</key>
+			<string>Pick the .app to use (only when set to "Custom App" above)</string>
+			<key>label</key>
+			<string>🖥️ Fn App Path</string>
+			<key>type</key>
+			<string>filepicker</string>
+			<key>variable</key>
+			<string>app_fn_path</string>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>default</key>
+				<string>origin</string>
+				<key>placeholder</key>
+				<string>origin</string>
+				<key>required</key>
+				<false/>
+				<key>trim</key>
+				<true/>
+			</dict>
+			<key>description</key>
+			<string>Git remote used when opening repos in a browser (e.g. origin)</string>
+			<key>label</key>
+			<string>🖥️ Remote Name</string>
+			<key>type</key>
+			<string>textfield</string>
+			<key>variable</key>
+			<string>remote_name</string>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>default</key>
+				<string></string>
+				<key>filtermode</key>
+				<integer>1</integer>
+				<key>placeholder</key>
+				<string>~/code</string>
+				<key>required</key>
+				<false/>
+			</dict>
+			<key>description</key>
+			<string>Folder to scan for Git repositories. Leave empty to skip this slot.</string>
+			<key>label</key>
+			<string>📂 Search Directory 1</string>
+			<key>type</key>
+			<string>filepicker</string>
+			<key>variable</key>
+			<string>search_dir_1</string>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>default</key>
+				<string>2</string>
+				<key>placeholder</key>
+				<string>2</string>
+				<key>required</key>
+				<false/>
+				<key>trim</key>
+				<true/>
+			</dict>
+			<key>description</key>
+			<string>How many levels deep to search (default: 2)</string>
+			<key>label</key>
+			<string>📂 Depth 1</string>
+			<key>type</key>
+			<string>textfield</string>
+			<key>variable</key>
+			<string>search_depth_1</string>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>default</key>
+				<string></string>
+				<key>placeholder</key>
+				<string>tmp, vendor</string>
+				<key>required</key>
+				<false/>
+				<key>trim</key>
+				<true/>
+			</dict>
+			<key>description</key>
+			<string>Comma-separated glob patterns to exclude (e.g. tmp, vendor)</string>
+			<key>label</key>
+			<string>📂 Excludes 1</string>
+			<key>type</key>
+			<string>textfield</string>
+			<key>variable</key>
+			<string>search_excludes_1</string>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>default</key>
+				<string>1</string>
+				<key>placeholder</key>
+				<string>1</string>
+				<key>required</key>
+				<false/>
+				<key>trim</key>
+				<true/>
+			</dict>
+			<key>description</key>
+			<string>Name repo after Nth parent directory (1 = immediate parent, 2 = grandparent)</string>
+			<key>label</key>
+			<string>📂 Name for Parent 1</string>
+			<key>type</key>
+			<string>textfield</string>
+			<key>variable</key>
+			<string>search_name_for_parent_1</string>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>default</key>
+				<string></string>
+				<key>filtermode</key>
+				<integer>1</integer>
+				<key>placeholder</key>
+				<string></string>
+				<key>required</key>
+				<false/>
+			</dict>
+			<key>description</key>
+			<string>Folder to scan for Git repositories. Leave empty to skip this slot.</string>
+			<key>label</key>
+			<string>📂 Search Directory 2</string>
+			<key>type</key>
+			<string>filepicker</string>
+			<key>variable</key>
+			<string>search_dir_2</string>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>default</key>
+				<string>2</string>
+				<key>placeholder</key>
+				<string>2</string>
+				<key>required</key>
+				<false/>
+				<key>trim</key>
+				<true/>
+			</dict>
+			<key>description</key>
+			<string>How many levels deep to search (default: 2)</string>
+			<key>label</key>
+			<string>📂 Depth 2</string>
+			<key>type</key>
+			<string>textfield</string>
+			<key>variable</key>
+			<string>search_depth_2</string>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>default</key>
+				<string></string>
+				<key>placeholder</key>
+				<string>tmp, vendor</string>
+				<key>required</key>
+				<false/>
+				<key>trim</key>
+				<true/>
+			</dict>
+			<key>description</key>
+			<string>Comma-separated glob patterns to exclude (e.g. tmp, vendor)</string>
+			<key>label</key>
+			<string>📂 Excludes 2</string>
+			<key>type</key>
+			<string>textfield</string>
+			<key>variable</key>
+			<string>search_excludes_2</string>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>default</key>
+				<string>1</string>
+				<key>placeholder</key>
+				<string>1</string>
+				<key>required</key>
+				<false/>
+				<key>trim</key>
+				<true/>
+			</dict>
+			<key>description</key>
+			<string>Name repo after Nth parent directory (1 = immediate parent, 2 = grandparent)</string>
+			<key>label</key>
+			<string>📂 Name for Parent 2</string>
+			<key>type</key>
+			<string>textfield</string>
+			<key>variable</key>
+			<string>search_name_for_parent_2</string>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>default</key>
+				<string></string>
+				<key>filtermode</key>
+				<integer>1</integer>
+				<key>placeholder</key>
+				<string></string>
+				<key>required</key>
+				<false/>
+			</dict>
+			<key>description</key>
+			<string>Folder to scan for Git repositories. Leave empty to skip this slot.</string>
+			<key>label</key>
+			<string>📂 Search Directory 3</string>
+			<key>type</key>
+			<string>filepicker</string>
+			<key>variable</key>
+			<string>search_dir_3</string>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>default</key>
+				<string>2</string>
+				<key>placeholder</key>
+				<string>2</string>
+				<key>required</key>
+				<false/>
+				<key>trim</key>
+				<true/>
+			</dict>
+			<key>description</key>
+			<string>How many levels deep to search (default: 2)</string>
+			<key>label</key>
+			<string>📂 Depth 3</string>
+			<key>type</key>
+			<string>textfield</string>
+			<key>variable</key>
+			<string>search_depth_3</string>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>default</key>
+				<string></string>
+				<key>placeholder</key>
+				<string>tmp, vendor</string>
+				<key>required</key>
+				<false/>
+				<key>trim</key>
+				<true/>
+			</dict>
+			<key>description</key>
+			<string>Comma-separated glob patterns to exclude (e.g. tmp, vendor)</string>
+			<key>label</key>
+			<string>📂 Excludes 3</string>
+			<key>type</key>
+			<string>textfield</string>
+			<key>variable</key>
+			<string>search_excludes_3</string>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>default</key>
+				<string>1</string>
+				<key>placeholder</key>
+				<string>1</string>
+				<key>required</key>
+				<false/>
+				<key>trim</key>
+				<true/>
+			</dict>
+			<key>description</key>
+			<string>Name repo after Nth parent directory (1 = immediate parent, 2 = grandparent)</string>
+			<key>label</key>
+			<string>📂 Name for Parent 3</string>
+			<key>type</key>
+			<string>textfield</string>
+			<key>variable</key>
+			<string>search_name_for_parent_3</string>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>default</key>
+				<string></string>
+				<key>filtermode</key>
+				<integer>1</integer>
+				<key>placeholder</key>
+				<string></string>
+				<key>required</key>
+				<false/>
+			</dict>
+			<key>description</key>
+			<string>Folder to scan for Git repositories. Leave empty to skip this slot.</string>
+			<key>label</key>
+			<string>📂 Search Directory 4</string>
+			<key>type</key>
+			<string>filepicker</string>
+			<key>variable</key>
+			<string>search_dir_4</string>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>default</key>
+				<string>2</string>
+				<key>placeholder</key>
+				<string>2</string>
+				<key>required</key>
+				<false/>
+				<key>trim</key>
+				<true/>
+			</dict>
+			<key>description</key>
+			<string>How many levels deep to search (default: 2)</string>
+			<key>label</key>
+			<string>📂 Depth 4</string>
+			<key>type</key>
+			<string>textfield</string>
+			<key>variable</key>
+			<string>search_depth_4</string>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>default</key>
+				<string></string>
+				<key>placeholder</key>
+				<string>tmp, vendor</string>
+				<key>required</key>
+				<false/>
+				<key>trim</key>
+				<true/>
+			</dict>
+			<key>description</key>
+			<string>Comma-separated glob patterns to exclude (e.g. tmp, vendor)</string>
+			<key>label</key>
+			<string>📂 Excludes 4</string>
+			<key>type</key>
+			<string>textfield</string>
+			<key>variable</key>
+			<string>search_excludes_4</string>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>default</key>
+				<string>1</string>
+				<key>placeholder</key>
+				<string>1</string>
+				<key>required</key>
+				<false/>
+				<key>trim</key>
+				<true/>
+			</dict>
+			<key>description</key>
+			<string>Name repo after Nth parent directory (1 = immediate parent, 2 = grandparent)</string>
+			<key>label</key>
+			<string>📂 Name for Parent 4</string>
+			<key>type</key>
+			<string>textfield</string>
+			<key>variable</key>
+			<string>search_name_for_parent_4</string>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>default</key>
+				<string></string>
+				<key>filtermode</key>
+				<integer>1</integer>
+				<key>placeholder</key>
+				<string></string>
+				<key>required</key>
+				<false/>
+			</dict>
+			<key>description</key>
+			<string>Folder to scan for Git repositories. Leave empty to skip this slot.</string>
+			<key>label</key>
+			<string>📂 Search Directory 5</string>
+			<key>type</key>
+			<string>filepicker</string>
+			<key>variable</key>
+			<string>search_dir_5</string>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>default</key>
+				<string>2</string>
+				<key>placeholder</key>
+				<string>2</string>
+				<key>required</key>
+				<false/>
+				<key>trim</key>
+				<true/>
+			</dict>
+			<key>description</key>
+			<string>How many levels deep to search (default: 2)</string>
+			<key>label</key>
+			<string>📂 Depth 5</string>
+			<key>type</key>
+			<string>textfield</string>
+			<key>variable</key>
+			<string>search_depth_5</string>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>default</key>
+				<string></string>
+				<key>placeholder</key>
+				<string>tmp, vendor</string>
+				<key>required</key>
+				<false/>
+				<key>trim</key>
+				<true/>
+			</dict>
+			<key>description</key>
+			<string>Comma-separated glob patterns to exclude (e.g. tmp, vendor)</string>
+			<key>label</key>
+			<string>📂 Excludes 5</string>
+			<key>type</key>
+			<string>textfield</string>
+			<key>variable</key>
+			<string>search_excludes_5</string>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>default</key>
+				<string>1</string>
+				<key>placeholder</key>
+				<string>1</string>
+				<key>required</key>
+				<false/>
+				<key>trim</key>
+				<true/>
+			</dict>
+			<key>description</key>
+			<string>Name repo after Nth parent directory (1 = immediate parent, 2 = grandparent)</string>
+			<key>label</key>
+			<string>📂 Name for Parent 5</string>
+			<key>type</key>
+			<string>textfield</string>
+			<key>variable</key>
+			<string>search_name_for_parent_5</string>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>default</key>
+				<string></string>
+				<key>required</key>
+				<false/>
+				<key>trim</key>
+				<true/>
+				<key>verticalsize</key>
+				<integer>3</integer>
+			</dict>
+			<key>description</key>
+			<string>Glob patterns to exclude from ALL search directories, one per line (e.g. node_modules)</string>
+			<key>label</key>
+			<string>⚙️ Global Exclude Patterns</string>
+			<key>type</key>
+			<string>textarea</string>
+			<key>variable</key>
+			<string>global_excludes</string>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>default</key>
+				<string>180</string>
+				<key>placeholder</key>
+				<string>180</string>
+				<key>required</key>
+				<false/>
+				<key>trim</key>
+				<true/>
+			</dict>
+			<key>description</key>
+			<string>How often to automatically refresh the repo list (default: 180 = 3 hours)</string>
+			<key>label</key>
+			<string>⚙️ Update Interval (minutes)</string>
+			<key>type</key>
+			<string>textfield</string>
+			<key>variable</key>
+			<string>update_interval</string>
+		</dict>
+	</array>
 	<key>variables</key>
-	<dict>
-		<key>UPDATE_EVERY_MINS</key>
-		<string>180</string>
-	</dict>
+	<dict/>
 	<key>version</key>
 	<string>1.3.37</string>
 	<key>webaddress</key>

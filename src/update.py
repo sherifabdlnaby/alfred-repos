@@ -12,7 +12,7 @@
 
 """Update the cache of git repositories.
 
-Uses settings from the workflow's `settings.json` file.
+Uses settings from Alfred's User Configuration environment variables.
 """
 
 
@@ -23,7 +23,7 @@ from fnmatch import fnmatch
 from multiprocessing.dummy import Pool
 from time import time
 
-from repos import Repo
+from repos import Repo, get_search_dirs_from_env, get_global_excludes, save_config_hash
 from workflow import Workflow
 
 # How many search threads to run at the same time
@@ -134,7 +134,7 @@ def main(wf):
     """Run script."""
     start = time()
 
-    search_dirs = wf.settings.get('search_dirs', [])
+    search_dirs = get_search_dirs_from_env()
 
     if not search_dirs:
         log.error('No search directories configured. '
@@ -143,7 +143,7 @@ def main(wf):
 
     uid = os.getuid()
     gids = os.getgroups()
-    global_excludes = wf.settings.get('global_exclude_patterns', [])
+    global_excludes = get_global_excludes()
 
     repos = []
     results = []  # For AsyncResults objects returned by `apply_async`
@@ -172,6 +172,7 @@ def main(wf):
         repos += r.get()
 
     wf.cache_data('repos', repos)
+    save_config_hash(search_dirs, global_excludes)
 
     log.info('%d repo(s) found in %0.2fs', len(repos), time() - start)
     log.info('update finished')
