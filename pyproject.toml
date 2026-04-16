@@ -4,7 +4,7 @@ version = "4.3.0"
 description = "Browse, search and open local Git repositories with Alfred"
 readme = "README.md"
 license = "MIT"
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 authors = [
     { name = "Sherif Abdel-Naby", email = "sherifabdlnaby@gmail.com" },
 ]
