@@ -16,7 +16,6 @@ Find, open and search Git repos on your system.
 
 Usage:
     repos.py search [<query>]
-    repos.py settings
     repos.py update
     repos.py open <appkey> <path>
 
@@ -26,11 +25,12 @@ Options:
 """
 
 
+import hashlib
+import json
 import os
 import re
 import subprocess
 import sys
-import time
 from collections import namedtuple
 
 from workflow import ICON_INFO, ICON_WARNING, Workflow
@@ -38,49 +38,35 @@ from workflow.background import is_running, run_in_background
 from workflow.update import Version
 from workflow.notify import notify
 
-# How often to check for new/updated repos
 DEFAULT_UPDATE_INTERVAL = 180  # minutes
 
-# GitHub repo for self-updating
 UPDATE_SETTINGS = {'github_slug': 'sherifabdlnaby/alfred-repos'}
 
-# GitHub Issues
 HELP_URL = 'https://github.com/sherifabdlnaby/alfred-repos/issues'
 
-# Icon shown if a newer version is available
 ICON_UPDATE = 'update-available.png'
 
-# Available modifier keys
-# MODIFIERS = ('cmd', 'alt', 'ctrl', 'shift', 'fn')
-
-# These apps will be passed the remote repo URL instead
-# of the local directory path
-BROWSERS = [
-    'Browser',  # default browser
+BROWSERS = {
     'Google Chrome',
     'Firefox',
     'Safari',
     'WebKit',
-]
-
-DEFAULT_SEARCH_PATH = '~/delete/this/example'
-DEFAULT_SETTINGS = {
-    'search_dirs': [{
-        'path': DEFAULT_SEARCH_PATH,
-        'depth': 2,
-        'name_for_parent': 1,
-        'excludes': ['tmp', 'bad/smell/*']
-    }],
-    'global_exclude_patterns': [],
-    'app_default': 'Finder',
-    'app_cmd': 'Terminal',
-    'app_alt': None,
-    'app_ctrl': None,
-    'app_shift': None,
-    'app_fn': None,
+    'Arc',
+    'Brave Browser',
+    'Microsoft Edge',
+    'Opera',
+    'Vivaldi',
 }
 
-# Will be populated later
+# App open modes (popupbutton values)
+MODE_NONE = 'none'
+MODE_FINDER = 'finder'
+MODE_TERMINAL = 'terminal'
+MODE_BROWSER = 'browser'
+MODE_CUSTOM = 'custom'
+
+NUM_SEARCH_SLOTS = 5
+
 log = None
 
 
@@ -91,71 +77,101 @@ class AttrDict(dict):
     """Access dictionary keys as attributes."""
 
     def __init__(self, *args, **kwargs):
-        """Create new dictionary."""
         super(AttrDict, self).__init__(*args, **kwargs)
-        # Assigning self to __dict__ turns keys into attributes
         self.__dict__ = self
 
 
-def is_defaults(d):
-    """Return ``True`` if settings are do-nothing defaults.
+def get_search_dirs_from_env():
+    """Build search_dirs list from Alfred User Configuration env vars."""
+    dirs = []
+    for i in range(1, NUM_SEARCH_SLOTS + 1):
+        path = os.getenv(f'search_dir_{i}', '').strip()
+        if not path:
+            continue
+        excludes_raw = os.getenv(f'search_excludes_{i}', '')
+        dirs.append({
+            'path': path,
+            'depth': int(os.getenv(f'search_depth_{i}', '2') or '2'),
+            'excludes': [x.strip() for x in excludes_raw.split(',') if x.strip()],
+            'name_for_parent': int(os.getenv(f'search_name_for_parent_{i}', '1') or '1'),
+        })
+    return dirs
 
-    Args:
-        d (dict): Workflow settings
+
+def get_global_excludes():
+    """Read global exclude patterns from env var (newline-separated)."""
+    raw = os.getenv('global_excludes', '').strip()
+    if not raw:
+        return []
+    return [x.strip() for x in raw.splitlines() if x.strip()]
+
+
+def search_config_hash(search_dirs, global_excludes):
+    """Compute a hash from the already-parsed search config."""
+    blob = json.dumps({'dirs': search_dirs, 'excludes': global_excludes}, sort_keys=True)
+    return hashlib.md5(blob.encode()).hexdigest()
+
+
+def config_changed(search_dirs, global_excludes):
+    """Check if search config changed since last cache update.
+
+    Does NOT write the new hash to cache. The caller should persist
+    the hash after a successful update via save_config_hash().
     """
-    dirs = d.get('search_dirs') or []
-    return len(dirs) == 1 and dirs[0]['path'] == DEFAULT_SEARCH_PATH
+    current = search_config_hash(search_dirs, global_excludes)
+    stored = wf.cached_data('config_hash', max_age=0)
+    return current != stored
 
 
-def settings_updated():
-    """Test whether settings file is newer than repos cache.
+def save_config_hash(search_dirs, global_excludes):
+    """Persist the config hash after a successful update."""
+    wf.cache_data('config_hash', search_config_hash(search_dirs, global_excludes))
 
-    Returns:
-        bool: ``True`` if ``settings.json`` is newer than the repos cache.
 
+def app_name_from_path(app_path):
+    """Extract display name from an .app path.
+
+    '/Applications/Visual Studio Code.app' -> 'Visual Studio Code'
     """
-    cache_age = wf.cached_data_age('repos')
-    settings_age = time.time() - os.stat(wf.settings_path).st_mtime
-    log.debug('cache_age=%0.2f, settings_age=%0.2f', cache_age, settings_age)
-    return settings_age < cache_age
+    return os.path.basename(app_path).removesuffix('.app')
 
 
-def join_english(items):
-    """Join a list of unicode objects with commas and/or 'and'."""
-    if isinstance(items, str):
-        return items
+def app_display_name(mode, path=''):
+    """Return a human-readable name for an app config."""
+    if mode == MODE_FINDER:
+        return 'Finder'
+    if mode == MODE_TERMINAL:
+        return 'Terminal'
+    if mode == MODE_BROWSER:
+        return 'Default Browser'
+    if mode == MODE_CUSTOM and path:
+        return app_name_from_path(path)
+    return None
 
-    if len(items) == 1:
-        return items[0]
 
-    elif len(items) == 2:
-        return ' and '.join(items)
-
-    return ', '.join(items[:-1]) + ' and {}'.format(items[-1])
+def is_browser(app_path):
+    """Check if the app is a web browser by its name."""
+    return app_name_from_path(app_path) in BROWSERS
 
 
 def get_apps():
-    """Load applications configured in settings.
+    """Load app configs from Alfred User Configuration env vars.
 
-    Each value may be a string for a single app or a list for
-    multiple apps.
+    Each modifier key has a mode (popupbutton) and optional path (filepicker).
 
     Returns:
-        dict: Modkey to application mapping.
+        dict: Modkey to (mode, path) tuple mapping. Keys with mode 'none' are excluded.
 
     """
     apps = {}
-    for key, app in wf.settings.items():
-        if not key.startswith('app_'):
-            continue
+    for key in ('default', 'cmd', 'alt', 'ctrl', 'shift', 'fn'):
+        mode = os.getenv(f'app_{key}', MODE_NONE).strip()
+        path = os.getenv(f'app_{key}_path', '').strip()
+        if mode and mode != MODE_NONE:
+            apps[key] = (mode, path)
 
-        key = key[4:]
-        if isinstance(app, list):
-            app = app[:]
-        apps[key] = app
-
-    if not apps.get('default'):  # Things will break if this isn't set
-        apps['default'] = 'Finder'
+    if 'default' not in apps:
+        apps['default'] = (MODE_FINDER, '')
 
     return apps
 
@@ -170,7 +186,6 @@ def get_repos(opts):
         list: Sequence of `Repo` tuples.
 
     """
-    # Load data, update if necessary
     if not wf.cached_data_fresh('repos', max_age=opts.update_interval):
         do_update()
     repos = wf.cached_data('repos', max_age=0)
@@ -179,7 +194,6 @@ def get_repos(opts):
         do_update()
         return []
 
-    # Check if cached data is old version
     if isinstance(repos[0], str):
         do_update()
         return []
@@ -194,13 +208,10 @@ def repo_url(path):
         path (str): Path to git repo.
 
     Returns:
-        str: URL of remote specified in the remote_name setting. Defaults to origin.
+        str: URL of remote. Defaults to origin.
 
     """
-    remote_name = wf.settings.get('remote_name')
-    # Check if key does not exist or value is set to None
-    if remote_name is None:
-        remote_name = 'origin'
+    remote_name = os.getenv('remote_name', 'origin').strip() or 'origin'
 
     remotes = subprocess.check_output(['git', 'remote'], cwd=path).decode('utf-8').splitlines()
     log.debug('remotes=%s', remotes)
@@ -215,8 +226,37 @@ def repo_url(path):
     return 'https://' + re.sub(r':', '/', url).strip()
 
 
+def _resolve_open_target(mode, custom_path, repo_path):
+    """Determine the target and app flag for opening a repo.
+
+    Returns:
+        tuple: (target, app_flag_list) or None if nothing to open.
+    """
+    use_url = mode == MODE_BROWSER or (mode == MODE_CUSTOM and custom_path and is_browser(custom_path))
+
+    if use_url:
+        target = repo_url(repo_path)
+        if not target:
+            return None
+    else:
+        target = repo_path
+
+    if mode == MODE_FINDER:
+        app_flag = []
+    elif mode == MODE_TERMINAL:
+        app_flag = ['-a', 'Terminal']
+    elif mode == MODE_BROWSER:
+        app_flag = []
+    elif mode == MODE_CUSTOM and custom_path:
+        app_flag = ['-a', custom_path]
+    else:
+        return None
+
+    return target, app_flag
+
+
 def do_open(opts):
-    """Open repo in the specified application(s).
+    """Open repo in the specified application.
 
     Args:
         opts (AttrDict): CLI options.
@@ -226,52 +266,21 @@ def do_open(opts):
 
     """
     all_apps = get_apps()
-    apps = all_apps.get(opts.appkey)
-    if apps is None:
-        print('App {} not set. Use `reposettings`'.format(opts.appkey))
+    app = all_apps.get(opts.appkey)
+    if app is None:
+        print('App {} not set. Configure this workflow in Alfred Preferences.'.format(opts.appkey))
         return 0
 
-    if not isinstance(apps, list):
-        apps = [apps]
-
-    for app in apps:
-        if app in BROWSERS:
-            url = repo_url(opts.path)
-            if url:
-                log.info('opening %s with %s ...', url, app)
-                if app == 'Browser':
-                    subprocess.call(['open', url])
-                else:
-                    subprocess.call(['open', '-a', app, url])
-        else:
-            log.info('opening %s with %s ...', opts.path, app)
-            subprocess.call(['open', '-a', app, opts.path])
-
-
-def do_settings():
-    """Open ``settings.json`` in default editor.
-
-    Args:
-        opts (AttrDict): CLI options.
-
-    Returns:
-        int: Exit status.
-
-    """
-    subprocess.call(['open', wf.settings_path])
-    return 0
+    mode, path = app
+    result = _resolve_open_target(mode, path, opts.path)
+    if result:
+        target, app_flag = result
+        log.info('opening %s ...', target)
+        subprocess.call(['open'] + app_flag + [target])
 
 
 def do_update():
-    """Update cached list of git repos.
-
-    Args:
-        opts (AttrDict): CLI options.
-
-    Returns:
-        int: Exit status.
-
-    """
+    """Update cached list of git repos."""
     run_in_background('update', ['/usr/bin/env', 'python3', 'update.py'])
     return 0
 
@@ -290,14 +299,15 @@ def do_search(repos, opts):
     apps = get_apps()
     subtitles = {}
     valid = {}
-    for key, app in apps.items():
-        if not app:
-            subtitles[key] = ('App for ' + key + ' not set. '
-                              'Use `reposettings` to set it.')
-            valid[key] = False
-        else:
-            subtitles[key] = 'Open in {}'.format(join_english(app))
+    for key, (mode, path) in apps.items():
+        name = app_display_name(mode, path)
+        if name:
+            subtitles[key] = 'Open in {}'.format(name)
             valid[key] = True
+        else:
+            subtitles[key] = ('App for ' + key + ' not set. '
+                              'Configure this workflow in Alfred Preferences.')
+            valid[key] = False
 
     if opts.query:
         repos = wf.filter(opts.query, repos, lambda t: t[0], min_score=30)
@@ -312,7 +322,6 @@ def do_search(repos, opts):
         pretty_path = subtitle = r.path.replace(home, '~')
         app = subtitles.get('default')
 
-        # Check if Icon Path Exists else use default
         icon = 'icon.png'
         if os.path.isfile(os.path.dirname(r.path) + '/' + '.alfred-repos-icon.png'):
             icon = os.path.dirname(r.path) + '/' + '.alfred-repos-icon.png'
@@ -355,8 +364,8 @@ def parse_args():
 
     log.debug('args=%r', args)
 
-    update_interval = int(os.getenv('UPDATE_EVERY_MINS',
-                                    DEFAULT_UPDATE_INTERVAL)) * 60
+    update_interval = int(os.getenv('update_interval',
+                                    str(DEFAULT_UPDATE_INTERVAL))) * 60
 
     opts = AttrDict(
         query=(args.get('<query>') or '').strip(),
@@ -365,7 +374,6 @@ def parse_args():
         update_interval=update_interval,
         do_search=args.get('search'),
         do_update=args.get('update'),
-        do_settings=args.get('settings'),
         do_open=args.get('open'),
     )
 
@@ -377,19 +385,12 @@ def main(wf):
     """Run the workflow."""
     opts = parse_args()
 
-    # Alternate actions
-    # ------------------------------------------------------------------
     if opts.do_open:
         return do_open(opts)
-
-    elif opts.do_settings:
-        return do_settings()
 
     elif opts.do_update:
         return do_update()
 
-    # Notify user if update is available
-    # ------------------------------------------------------------------
     if wf.update_available:
         wf.add_item('Workflow Update is Available',
                     '↩ or ⇥ to install',
@@ -397,28 +398,22 @@ def main(wf):
                     valid=False,
                     icon=ICON_UPDATE)
 
-    # Try to search git repos
-    # ------------------------------------------------------------------
-    search_dirs = wf.settings.get('search_dirs', [])
+    search_dirs = get_search_dirs_from_env()
 
-    # Can't do anything with no directories to search
-    if not search_dirs or is_defaults(wf.settings):
-        wf.add_item("You haven't configured any directories to search",
-                    'Use `reposettings` to edit your configuration',
+    if not search_dirs:
+        wf.add_item("No search directories configured",
+                    'Configure this workflow in Alfred Preferences',
                     icon=ICON_WARNING)
         wf.send_feedback()
         return 0
 
-    # Reload repos if settings file has been updated
-    if settings_updated():
-        log.info('settings were updated. Reloading repos...')
+    global_excludes = get_global_excludes()
+    if config_changed(search_dirs, global_excludes):
+        log.info('config was updated. Reloading repos...')
         do_update()
 
     repos = get_repos(opts)
 
-    # Show appropriate warning/info message if there are no repos to
-    # show/search
-    # ------------------------------------------------------------------
     if not repos:
         if is_running('update'):
             wf.add_item('Updating list of repos…',
@@ -427,12 +422,11 @@ def main(wf):
             wf.rerun = 0.5
         else:
             wf.add_item('No git repos found',
-                        'Check your settings with `reposettings`',
+                        'Check your search directories in Alfred Preferences',
                         icon=ICON_WARNING)
         wf.send_feedback()
         return 0
 
-    # Reload results if `update` is running
     if is_running('update'):
         wf.rerun = 0.5
 
@@ -440,8 +434,7 @@ def main(wf):
 
 
 if __name__ == '__main__':
-    wf = Workflow(default_settings=DEFAULT_SETTINGS,
-                  update_settings=UPDATE_SETTINGS,
+    wf = Workflow(update_settings=UPDATE_SETTINGS,
                   help_url=HELP_URL)
     log = wf.logger
     sys.exit(wf.run(main))
