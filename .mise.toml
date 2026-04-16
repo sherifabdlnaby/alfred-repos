@@ -1,0 +1,29 @@
+[tools]
+python = "3.12"
+uv = "latest"
+
+[tasks.setup]
+description = "Install project dependencies"
+run = "uv sync"
+
+[tasks.build]
+description = "Build .alfredworkflow package"
+run = """
+#!/usr/bin/env bash
+set -e
+rm -rf build/
+mkdir -p build/
+uv pip install --target src/ alfred-pyworkflow docopt --quiet
+cd src && zip -r ../build/alfred-repos.alfredworkflow . -x '*.pyc' '*/__pycache__/*' '*.egg-info/*'
+echo "Built build/alfred-repos.alfredworkflow"
+"""
+
+[tasks.clean]
+description = "Clean build artifacts and vendored deps from src/"
+run = """
+#!/usr/bin/env bash
+rm -rf build/
+rm -rf src/workflow/ src/docopt.py src/docopt/
+rm -rf src/*.dist-info src/*.egg-info
+echo "Cleaned build artifacts"
+"""

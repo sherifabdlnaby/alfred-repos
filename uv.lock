@@ -1,0 +1,30 @@
+version = 1
+revision = 3
+requires-python = ">=3.9"
+
+[[package]]
+name = "alfred-pyworkflow"
+version = "2.1.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/9e/85/dfe04b23c42382e8355019bc57052f902f20d20b54eff13d88b8c4370b36/Alfred-PyWorkflow-2.1.0.tar.gz", hash = "sha256:c692e76469a1e10caebe8c25c34aedf8621ae8a3f7361afde88573c82f0c795a", size = 81236, upload-time = "2025-01-21T19:24:19.306Z" }
+
+[[package]]
+name = "alfred-repos"
+version = "4.3.0"
+source = { editable = "." }
+dependencies = [
+    { name = "alfred-pyworkflow" },
+    { name = "docopt" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "alfred-pyworkflow", specifier = ">=2.0" },
+    { name = "docopt", specifier = ">=0.6.2" },
+]
+
+[[package]]
+name = "docopt"
+version = "0.6.2"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/a2/55/8f8cab2afd404cf578136ef2cc5dfb50baa1761b68c9da1fb1e4eed343c9/docopt-0.6.2.tar.gz", hash = "sha256:49b3a825280bd66b3aa83585ef59c4a8c82f2c8a522dbe754a8bc8d08c85c491", size = 25901, upload-time = "2014-06-16T11:18:57.406Z" }
