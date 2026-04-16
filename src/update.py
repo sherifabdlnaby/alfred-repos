@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # encoding: utf-8
 #
+# Copyright (c) 2026 Sherif Abdel-Naby <sherifabdlnaby@gmail.com>
 # Copyright (c) 2022 Thomas Harr <xDevThomas@gmail.com>
 # Copyright (c) 2014 Dean Jackson <deanishe@deanishe.net>
 #

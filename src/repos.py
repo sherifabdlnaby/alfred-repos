@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # encoding: utf-8
 #
+# Copyright (c) 2026 Sherif Abdel-Naby <sherifabdlnaby@gmail.com>
 # Copyright (c) 2022 Thomas Harr <xDevThomas@gmail.com>
 # Copyright (c) 2014 Dean Jackson <deanishe@deanishe.net>
 #
@@ -41,10 +42,10 @@ from workflow.notify import notify
 DEFAULT_UPDATE_INTERVAL = 180  # minutes
 
 # GitHub repo for self-updating
-UPDATE_SETTINGS = {'github_slug': 'harrtho/alfred-repos'}
+UPDATE_SETTINGS = {'github_slug': 'sherifabdlnaby/alfred-repos'}
 
 # GitHub Issues
-HELP_URL = 'https://github.com/harrtho/alfred-repos/issues'
+HELP_URL = 'https://github.com/sherifabdlnaby/alfred-repos/issues'
 
 # Icon shown if a newer version is available
 ICON_UPDATE = 'update-available.png'
