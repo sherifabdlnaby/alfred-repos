@@ -10,91 +10,77 @@ Browse, search and open local Git repositories with [Alfred][alfred].
   <img src="img/preview.gif" alt="Repos workflow demo" width="600">
 </p>
 
-## Download & Installation
+## Installation
 
-Download the [latest workflow release][gh-latest-release] from GitHub. Open the workflow file to
-install in Alfred.
+Download the [latest release][gh-latest-release] and open the `.alfredworkflow` file.
 
-## Getting Started
-
-1. Open Alfred Preferences and find the **Repos** workflow
-2. Click **Configure Workflow...** to open the configuration panel
-3. Under 🖥️ pick how you want to open repos for each modifier key
-4. Under 📂 add at least one folder that contains your Git repos
-5. Type `repos` in Alfred and start searching!
+After installing, click **Configure Workflow...** in Alfred Preferences to set up your search directories and apps.
 
 ## Usage
 
-- `repos [<query>]` — Search your Git repositories
+- `repos [<query>]` — Search your Git repos
   - `↩` — Open in Default App
   - `⌘↩` — Open in Cmd App
   - `⌥↩` — Open in Alt App
   - `^↩` — Open in Ctrl App
   - `⇧↩` — Open in Shift App
   - `fn↩` — Open in Fn App
-- `reposupdate` — Force refresh the cached list of repositories
+- `reposupdate` — Force refresh the repo list
 - `reposhelp` — Open this README in your browser
 
 ## Configuration
 
-All settings are configured via Alfred's native **Configure Workflow...** UI. No manual file editing required. Settings are synced automatically via Alfred Sync.
+Open **Configure Workflow...** in Alfred Preferences. No config files to mess with, and your settings sync across machines via Alfred Sync.
 
-### 🖥️ App Configuration
+### Apps
 
-Each modifier key can be set to one of:
+Each modifier key has a dropdown with these modes:
 
-| Mode | Behavior |
-|------|----------|
-| **None** | Modifier key disabled |
-| **Finder** | Reveal repo folder in Finder |
-| **Terminal** | Open repo in Terminal.app |
-| **Default Browser** | Open the repo's remote URL in your default browser |
-| **Custom App** | Pick any `.app` via the companion file picker |
+| Mode | What it does |
+|------|-------------|
+| None | Disabled |
+| Finder | Reveals the repo folder |
+| Terminal | Opens in Terminal.app |
+| Default Browser | Opens the repo's remote URL |
+| Custom App | Pick any `.app` via the file picker below it |
 
-If a custom app is a recognized browser (Chrome, Safari, Firefox, Arc, Brave, Edge, Opera, Vivaldi), it will automatically open the remote URL instead of the local path.
+If you pick a browser app (Chrome, Safari, Firefox, Arc, etc.) as a custom app, the workflow will open the remote URL instead of the local path.
 
-**Remote Name** controls which git remote is used for browser URLs (default: `origin`).
+The `Remote Name` field controls which git remote is used for browser URLs. Defaults to `origin`.
 
-### 📂 Search Directories
+### Search directories
 
-Up to 5 search directory slots are available. Each slot has:
+You get 5 slots. Each one has:
 
-- **Search Directory** — Folder to scan for Git repos
-- **Depth** — How many levels deep to search (default: `2`). A depth of `2` means repos must be direct children of the search directory.
-- **Excludes** — Comma-separated glob patterns to skip (e.g. `tmp, vendor, node_modules`)
-- **Name for Parent** — Which directory level to use as the repo name (`1` = immediate parent of `.git`, `2` = grandparent, etc.)
+- A folder picker for the directory to scan
+- `Depth` controls how many levels deep to search. Default is `2`, which means repos should be direct children of the search directory.
+- `Excludes` takes comma-separated glob patterns to skip (e.g. `tmp, vendor`)
+- `Name for Parent` controls which directory level shows as the repo name. `1` is the folder containing `.git` (the default), `2` is its parent, etc. Useful when all your repos have the same inner folder name like `src`.
 
-### ⚙️ Advanced
+### Advanced
 
-- **Global Exclude Patterns** — Glob patterns to exclude from ALL search directories, one per line
-- **Update Interval** — Minutes between automatic repo list updates (default: `180` = 3 hours). Use `reposupdate` to refresh immediately.
+- `Global Exclude Patterns` skips matching directories across all search paths, one pattern per line
+- `Update Interval` is how often (in minutes) the repo list auto-refreshes. Defaults to 180 (3 hours). Run `reposupdate` if you don't want to wait.
 
-### Custom Repo Icons
+### Custom icons
 
-Place a file named `.alfred-repos-icon.png` in the parent directory of your repos to give them a custom icon in Alfred results.
+Drop a `.alfred-repos-icon.png` file in a directory and all repos under it will use that icon in Alfred results. For example, `~/code/github/.alfred-repos-icon.png` applies to everything in `~/code/github/`.
 
-For example, if your repos live in `~/code/github/`, place the icon at `~/code/github/.alfred-repos-icon.png`. All repos under that directory will display the custom icon.
+## Issues
 
-## Bug Reports and Feature Requests
+File bugs or feature requests on [GitHub issues][gh-issues].
 
-Please use [GitHub issues][gh-issues] to report bugs or request features.
+## Credits
 
-## Contributors
-
-This Alfred Workflow is a fork of [harrtho/alfred-repos](https://github.com/harrtho/alfred-repos) by [Thomas Harr](https://github.com/harrtho), which itself continued the [abandoned workflow](https://github.com/deanishe/alfred-repos) by [Dean Jackson](https://github.com/deanishe).
+Fork of [harrtho/alfred-repos](https://github.com/harrtho/alfred-repos) by [Thomas Harr](https://github.com/harrtho), which continued the [original workflow](https://github.com/deanishe/alfred-repos) by [Dean Jackson](https://github.com/deanishe).
 
 ## License
 
-Repos Alfred Workflow is licensed under the [MIT License][license-mit]
+[MIT][license-mit]
 
-The workflow uses the following libraries:
+Libraries: [docopt][docopt] (MIT), [Alfred-PyWorkflow][alfred-pyworkflow] (MIT)
 
-- [docopt][docopt] ([MIT License][license-docopt])
-- [Alfred-PyWorkflow][alfred-pyworkflow] ([MIT License][license-mit])
-
-The workflow uses the following icons:
-
-- [git-scm.com][git] ([Creative Commons Attribution 3.0 Unported License][license-cc])
+Icons from [git-scm.com][git] ([CC BY 3.0][license-cc])
 
 [alfred-pyworkflow]: https://github.com/harrtho/alfred-pyworkflow
 [alfred]: https://www.alfredapp.com
