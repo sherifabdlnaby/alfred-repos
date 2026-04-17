@@ -38,7 +38,7 @@ from workflow.background import is_running, run_in_background
 from workflow.update import Version
 from workflow.notify import notify
 
-DEFAULT_UPDATE_INTERVAL = 180  # minutes
+DEFAULT_UPDATE_INTERVAL = 15  # minutes
 
 UPDATE_SETTINGS = {'github_slug': 'sherifabdlnaby/alfred-repos'}
 
