@@ -34,13 +34,15 @@ If a repo has git worktrees, press `⇥` (Tab) on it to drill into them. The mai
 Results that can be expanded carry a `(+N worktrees)` hint next to the branch name.
 
 ```
-Open in GoLand  | 🪾 main (+2 worktrees)  |  ~/code/my-repo
+my-repo          Open in GoLand  | 🪾 main (+2 worktrees)  |  ~/code/my-repo
 
 # Tab
-Open in GoLand  | 🪾 main             |  ~/code/my-repo
-Open in GoLand  | 🪾 feat/login       |  ~/code/my-repo/.worktree/login
-Open in GoLand  | 🪾 wt/experiment    |  ~/code/my-repo/.worktree/experiment
+my-repo          Open in GoLand  | 🪾 main             |  ~/code/my-repo
+feat/login       Open in GoLand  | 🪾 feat/login       |  ~/code/my-repo/.worktree/login
+wt/experiment    Open in GoLand  | 🪾 wt/experiment    |  ~/code/my-repo/.worktree/experiment
 ```
+
+The main repo keeps its name on drill-down so it's easy to spot alongside the worktrees.
 
 ## Configuration
 

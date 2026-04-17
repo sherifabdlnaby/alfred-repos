@@ -374,7 +374,7 @@ def do_search(repos, opts):
             query = rest
 
     if expanded:
-        items = [Worktree(expanded.branch or expanded.name, expanded.path, expanded.branch)]
+        items = [Worktree(expanded.name, expanded.path, expanded.branch)]
         items += expanded.worktrees
     else:
         items = repos
