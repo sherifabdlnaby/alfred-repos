@@ -291,7 +291,7 @@ GETTING STARTED
 1. Click "Configure Workflow..." above
 2. Under 🖥️ pick apps to open repos with
    (e.g. Default App = VS Code, Cmd App = iTerm)
-3. Under 📂 pick folders containing your Git repos
+3. Under the Search Directory sections, pick folders containing your Git repos
    (e.g. Search Directory 1 = ~/code, Depth = 2)
 4. Type "repos" in Alfred and start searching!
 
@@ -802,7 +802,7 @@ TIPS
 			<key>description</key>
 			<string>How many levels deep to search (default: 2)</string>
 			<key>label</key>
-			<string>📂 Depth 1</string>
+			<string>Depth</string>
 			<key>type</key>
 			<string>textfield</string>
 			<key>variable</key>
@@ -823,7 +823,7 @@ TIPS
 			<key>description</key>
 			<string>Comma-separated glob patterns to exclude (e.g. tmp, vendor)</string>
 			<key>label</key>
-			<string>📂 Excludes 1</string>
+			<string>Excludes</string>
 			<key>type</key>
 			<string>textfield</string>
 			<key>variable</key>
@@ -844,7 +844,7 @@ TIPS
 			<key>description</key>
 			<string>Name repo after Nth parent directory (1 = immediate parent, 2 = grandparent)</string>
 			<key>label</key>
-			<string>📂 Name for Parent 1</string>
+			<string>Name for Parent</string>
 			<key>type</key>
 			<string>textfield</string>
 			<key>variable</key>
@@ -886,7 +886,7 @@ TIPS
 			<key>description</key>
 			<string>How many levels deep to search (default: 2)</string>
 			<key>label</key>
-			<string>📂 Depth 2</string>
+			<string>Depth</string>
 			<key>type</key>
 			<string>textfield</string>
 			<key>variable</key>
@@ -907,7 +907,7 @@ TIPS
 			<key>description</key>
 			<string>Comma-separated glob patterns to exclude (e.g. tmp, vendor)</string>
 			<key>label</key>
-			<string>📂 Excludes 2</string>
+			<string>Excludes</string>
 			<key>type</key>
 			<string>textfield</string>
 			<key>variable</key>
@@ -928,7 +928,7 @@ TIPS
 			<key>description</key>
 			<string>Name repo after Nth parent directory (1 = immediate parent, 2 = grandparent)</string>
 			<key>label</key>
-			<string>📂 Name for Parent 2</string>
+			<string>Name for Parent</string>
 			<key>type</key>
 			<string>textfield</string>
 			<key>variable</key>
@@ -970,7 +970,7 @@ TIPS
 			<key>description</key>
 			<string>How many levels deep to search (default: 2)</string>
 			<key>label</key>
-			<string>📂 Depth 3</string>
+			<string>Depth</string>
 			<key>type</key>
 			<string>textfield</string>
 			<key>variable</key>
@@ -991,7 +991,7 @@ TIPS
 			<key>description</key>
 			<string>Comma-separated glob patterns to exclude (e.g. tmp, vendor)</string>
 			<key>label</key>
-			<string>📂 Excludes 3</string>
+			<string>Excludes</string>
 			<key>type</key>
 			<string>textfield</string>
 			<key>variable</key>
@@ -1012,7 +1012,7 @@ TIPS
 			<key>description</key>
 			<string>Name repo after Nth parent directory (1 = immediate parent, 2 = grandparent)</string>
 			<key>label</key>
-			<string>📂 Name for Parent 3</string>
+			<string>Name for Parent</string>
 			<key>type</key>
 			<string>textfield</string>
 			<key>variable</key>
@@ -1054,7 +1054,7 @@ TIPS
 			<key>description</key>
 			<string>How many levels deep to search (default: 2)</string>
 			<key>label</key>
-			<string>📂 Depth 4</string>
+			<string>Depth</string>
 			<key>type</key>
 			<string>textfield</string>
 			<key>variable</key>
@@ -1075,7 +1075,7 @@ TIPS
 			<key>description</key>
 			<string>Comma-separated glob patterns to exclude (e.g. tmp, vendor)</string>
 			<key>label</key>
-			<string>📂 Excludes 4</string>
+			<string>Excludes</string>
 			<key>type</key>
 			<string>textfield</string>
 			<key>variable</key>
@@ -1096,7 +1096,7 @@ TIPS
 			<key>description</key>
 			<string>Name repo after Nth parent directory (1 = immediate parent, 2 = grandparent)</string>
 			<key>label</key>
-			<string>📂 Name for Parent 4</string>
+			<string>Name for Parent</string>
 			<key>type</key>
 			<string>textfield</string>
 			<key>variable</key>
@@ -1138,7 +1138,7 @@ TIPS
 			<key>description</key>
 			<string>How many levels deep to search (default: 2)</string>
 			<key>label</key>
-			<string>📂 Depth 5</string>
+			<string>Depth</string>
 			<key>type</key>
 			<string>textfield</string>
 			<key>variable</key>
@@ -1159,7 +1159,7 @@ TIPS
 			<key>description</key>
 			<string>Comma-separated glob patterns to exclude (e.g. tmp, vendor)</string>
 			<key>label</key>
-			<string>📂 Excludes 5</string>
+			<string>Excludes</string>
 			<key>type</key>
 			<string>textfield</string>
 			<key>variable</key>
@@ -1180,7 +1180,7 @@ TIPS
 			<key>description</key>
 			<string>Name repo after Nth parent directory (1 = immediate parent, 2 = grandparent)</string>
 			<key>label</key>
-			<string>📂 Name for Parent 5</string>
+			<string>Name for Parent</string>
 			<key>type</key>
 			<string>textfield</string>
 			<key>variable</key>
