@@ -363,19 +363,41 @@ def do_search(repos, opts):
                               'Configure this workflow in Alfred Preferences.')
             valid[key] = False
 
-    if opts.query:
-        repos = wf.filter(opts.query, repos, lambda t: t[0], min_score=30)
-        log.info('%d/%d repos match `%s`', len(repos), len(repos), opts.query)
+    if wf.cached_data_age('repos_v2') > 30 and not is_running('update'):
+        run_in_background('update', ['/usr/bin/env', 'python3', 'update.py'])
+        wf.rerun = 2.0
 
-    if not repos:
-        wf.add_item('No matching repos found', icon=ICON_WARNING)
+    query = opts.query
+    expanded = None
+    if '/' in query:
+        prefix, rest = query.split('/', 1)
+        matches = [r for r in repos if r.name == prefix]
+        if len(matches) == 1:
+            expanded = matches[0]
+            query = rest
+
+    if expanded:
+        items = [Worktree(expanded.branch or expanded.name, expanded.path, expanded.branch)]
+        items += expanded.worktrees
+    else:
+        items = repos
+
+    if query:
+        items = wf.filter(query, items, lambda t: t[0], min_score=30)
+        log.info('%d match `%s`', len(items), query)
+
+    if not items:
+        wf.add_item('No matching worktrees found' if expanded else 'No matching repos found',
+                    icon=ICON_WARNING)
 
     home = os.environ['HOME']
-    for r in repos:
+    for r in items:
         log.debug(r)
         pretty_path = r.path.replace(home, '~')
-        branch = get_branch(r.path)
-        path_info = '{} {}  |  {}'.format(BRANCH_ICON, branch, pretty_path) if branch else pretty_path
+        path_info = '{} {}  |  {}'.format(BRANCH_ICON, r.branch, pretty_path) if r.branch else pretty_path
+        wt_count = len(r.worktrees) if hasattr(r, 'worktrees') else 0
+        if not expanded and wt_count:
+            path_info += '  (+{} worktree{})'.format(wt_count, '' if wt_count == 1 else 's')
         subtitle = path_info
         app = subtitles.get('default')
 
@@ -392,7 +414,8 @@ def do_search(repos, opts):
             uid=r.path,
             valid=valid.get('default', False),
             type='file',
-            icon=icon
+            icon=icon,
+            autocomplete=(r.name + '/') if (not expanded and wt_count) else None,
         )
         it.setvar('appkey', 'default')
 
