@@ -394,22 +394,21 @@ def do_search(repos, opts):
     for r in items:
         log.debug(r)
         pretty_path = r.path.replace(home, '~')
-        path_info = '{} {}  |  {}'.format(BRANCH_ICON, r.branch, pretty_path) if r.branch else pretty_path
+        branch_info = '{} {}  |  '.format(BRANCH_ICON, r.branch) if r.branch else ''
         wt_count = len(r.worktrees) if hasattr(r, 'worktrees') else 0
-        if not expanded and wt_count:
-            path_info += '  (+{} worktree{})'.format(wt_count, '' if wt_count == 1 else 's')
-        subtitle = path_info
-        app = subtitles.get('default')
+        wt_hint = '  (+{} worktree{})'.format(wt_count, '' if wt_count == 1 else 's') \
+            if (not expanded and wt_count) else ''
 
         icon = 'icon.png'
         if os.path.isfile(os.path.dirname(r.path) + '/' + '.alfred-repos-icon.png'):
             icon = os.path.dirname(r.path) + '/' + '.alfred-repos-icon.png'
 
-        if app:
-            subtitle += '  |  ' + app
+        def compose(app_subtitle):
+            return '{}  |  {}{}{}'.format(app_subtitle, branch_info, pretty_path, wt_hint)
+
         it = wf.add_item(
             r.name,
-            subtitle,
+            compose(subtitles.get('default', '')),
             arg=r.path,
             uid=r.path,
             valid=valid.get('default', False),
@@ -423,7 +422,7 @@ def do_search(repos, opts):
             if key == 'default':
                 continue
             mod = it.add_modifier(key.replace('_', '+'),
-                                  path_info + '  |  ' + subtitles[key],
+                                  compose(subtitles[key]),
                                   arg=r.path, valid=valid[key])
             mod.setvar('appkey', key)
 
