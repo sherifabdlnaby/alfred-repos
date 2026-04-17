@@ -67,6 +67,8 @@ MODE_CUSTOM = 'custom'
 
 NUM_SEARCH_SLOTS = 5
 
+BRANCH_ICON = '🪾'
+
 log = None
 
 
@@ -226,6 +228,33 @@ def repo_url(path):
     return 'https://' + re.sub(r':', '/', url).strip()
 
 
+def get_branch(path):
+    """Return current branch name (or short SHA for detached HEAD) by reading
+    `.git/HEAD` directly. Returns None if unresolvable.
+
+    Avoids spawning `git` per repo, so it's safe to call during search.
+    Handles `.git` files (worktrees, submodules) by following `gitdir:`.
+    """
+    git_path = os.path.join(path, '.git')
+    try:
+        if os.path.isfile(git_path):
+            with open(git_path) as f:
+                line = f.readline().strip()
+            if not line.startswith('gitdir: '):
+                return None
+            gitdir = line[len('gitdir: '):]
+            git_path = gitdir if os.path.isabs(gitdir) else os.path.join(path, gitdir)
+
+        with open(os.path.join(git_path, 'HEAD')) as f:
+            head = f.readline().strip()
+
+        if head.startswith('ref: refs/heads/'):
+            return head[len('ref: refs/heads/'):]
+        return head[:7] if head else None
+    except OSError:
+        return None
+
+
 def _resolve_open_target(mode, custom_path, repo_path):
     """Determine the target and app flag for opening a repo.
 
@@ -319,7 +348,10 @@ def do_search(repos, opts):
     home = os.environ['HOME']
     for r in repos:
         log.debug(r)
-        pretty_path = subtitle = r.path.replace(home, '~')
+        pretty_path = r.path.replace(home, '~')
+        branch = get_branch(r.path)
+        path_info = '{} {}  |  {}'.format(BRANCH_ICON, branch, pretty_path) if branch else pretty_path
+        subtitle = path_info
         app = subtitles.get('default')
 
         icon = 'icon.png'
@@ -327,7 +359,7 @@ def do_search(repos, opts):
             icon = os.path.dirname(r.path) + '/' + '.alfred-repos-icon.png'
 
         if app:
-            subtitle += ' //  ' + app
+            subtitle += '  |  ' + app
         it = wf.add_item(
             r.name,
             subtitle,
@@ -343,7 +375,7 @@ def do_search(repos, opts):
             if key == 'default':
                 continue
             mod = it.add_modifier(key.replace('_', '+'),
-                                  pretty_path + '  //  ' + subtitles[key],
+                                  path_info + '  |  ' + subtitles[key],
                                   arg=r.path, valid=valid[key])
             mod.setvar('appkey', key)
 
