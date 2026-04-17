@@ -72,7 +72,8 @@ BRANCH_ICON = '🪾'
 log = None
 
 
-Repo = namedtuple('Repo', 'name path')
+Repo = namedtuple('Repo', 'name path branch worktrees')
+Worktree = namedtuple('Worktree', 'name path branch')
 
 
 class AttrDict(dict):
@@ -188,9 +189,9 @@ def get_repos(opts):
         list: Sequence of `Repo` tuples.
 
     """
-    if not wf.cached_data_fresh('repos', max_age=opts.update_interval):
+    if not wf.cached_data_fresh('repos_v2', max_age=opts.update_interval):
         do_update()
-    repos = wf.cached_data('repos', max_age=0)
+    repos = wf.cached_data('repos_v2', max_age=0)
 
     if not repos:
         do_update()
@@ -253,6 +254,30 @@ def get_branch(path):
         return head[:7] if head else None
     except OSError:
         return None
+
+
+def enumerate_worktrees(repo_path):
+    """List linked worktrees under `<repo>/.git/worktrees/`. Empty if none.
+
+    Main worktree is excluded; callers synthesize it from the Repo fields.
+    """
+    worktrees_dir = os.path.join(repo_path, '.git', 'worktrees')
+    try:
+        entries = sorted(os.scandir(worktrees_dir), key=lambda e: e.name)
+    except (OSError, NotADirectoryError):
+        return []
+
+    out = []
+    for entry in entries:
+        try:
+            with open(os.path.join(entry.path, 'gitdir')) as f:
+                gitdir = f.readline().strip()
+        except OSError:
+            continue
+        wt_path = os.path.dirname(gitdir)
+        wt_branch = get_branch(wt_path) or entry.name
+        out.append(Worktree(wt_branch, wt_path, wt_branch))
+    return out
 
 
 def _resolve_open_target(mode, custom_path, repo_path):
