@@ -404,7 +404,8 @@ def do_search(repos, opts):
             icon = os.path.dirname(r.path) + '/' + '.alfred-repos-icon.png'
 
         def compose(app_subtitle):
-            return '{}  |  {}{}'.format(app_subtitle, branch_info, pretty_path)
+            sep = '  | ' if branch_info else '  |  '
+            return '{}{}{}{}'.format(app_subtitle, sep, branch_info, pretty_path)
 
         it = wf.add_item(
             r.name,
