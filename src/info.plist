@@ -6,32 +6,6 @@
 	<string>com.sherifabdlnaby.alfred-repos</string>
 	<key>connections</key>
 	<dict>
-		<key>13C4EEDF-EC8D-4B23-8693-6E050109AFDC</key>
-		<array>
-			<dict>
-				<key>destinationuid</key>
-				<string>FC60057D-548A-4394-9426-1764C21DC6F0</string>
-				<key>modifiers</key>
-				<integer>0</integer>
-				<key>modifiersubtext</key>
-				<string></string>
-				<key>vitoclose</key>
-				<false/>
-			</dict>
-		</array>
-		<key>227B191C-26EA-4302-B5A1-79CBA4BF107A</key>
-		<array>
-			<dict>
-				<key>destinationuid</key>
-				<string>47FD6543-A4A6-4714-B190-9DF8B5B28444</string>
-				<key>modifiers</key>
-				<integer>0</integer>
-				<key>modifiersubtext</key>
-				<string></string>
-				<key>vitoclose</key>
-				<false/>
-			</dict>
-		</array>
 		<key>25B07D69-2EF2-420F-8B3B-0E7E7CA7B34F</key>
 		<array>
 			<dict>
@@ -194,94 +168,6 @@ variables={allvars}</string>
 			<key>version</key>
 			<integer>1</integer>
 		</dict>
-		<dict>
-			<key>config</key>
-			<dict>
-				<key>concurrently</key>
-				<false/>
-				<key>escaping</key>
-				<integer>127</integer>
-				<key>script</key>
-				<string>open 'https://github.com/sherifabdlnaby/alfred-repos/blob/main/README.md'</string>
-				<key>scriptargtype</key>
-				<integer>1</integer>
-				<key>scriptfile</key>
-				<string></string>
-				<key>type</key>
-				<integer>0</integer>
-			</dict>
-			<key>type</key>
-			<string>alfred.workflow.action.script</string>
-			<key>uid</key>
-			<string>FC60057D-548A-4394-9426-1764C21DC6F0</string>
-			<key>version</key>
-			<integer>2</integer>
-		</dict>
-		<dict>
-			<key>config</key>
-			<dict>
-				<key>argumenttype</key>
-				<integer>2</integer>
-				<key>keyword</key>
-				<string>reposhelp</string>
-				<key>subtext</key>
-				<string></string>
-				<key>text</key>
-				<string>Open Repos Help File</string>
-				<key>withspace</key>
-				<false/>
-			</dict>
-			<key>type</key>
-			<string>alfred.workflow.input.keyword</string>
-			<key>uid</key>
-			<string>13C4EEDF-EC8D-4B23-8693-6E050109AFDC</string>
-			<key>version</key>
-			<integer>1</integer>
-		</dict>
-		<dict>
-			<key>config</key>
-			<dict>
-				<key>argumenttype</key>
-				<integer>2</integer>
-				<key>keyword</key>
-				<string>reposupdate</string>
-				<key>subtext</key>
-				<string></string>
-				<key>text</key>
-				<string>Update Git Repo Database</string>
-				<key>withspace</key>
-				<false/>
-			</dict>
-			<key>type</key>
-			<string>alfred.workflow.input.keyword</string>
-			<key>uid</key>
-			<string>227B191C-26EA-4302-B5A1-79CBA4BF107A</string>
-			<key>version</key>
-			<integer>1</integer>
-		</dict>
-		<dict>
-			<key>config</key>
-			<dict>
-				<key>concurrently</key>
-				<false/>
-				<key>escaping</key>
-				<integer>127</integer>
-				<key>script</key>
-				<string>/usr/bin/env python3 repos.py update</string>
-				<key>scriptargtype</key>
-				<integer>1</integer>
-				<key>scriptfile</key>
-				<string></string>
-				<key>type</key>
-				<integer>0</integer>
-			</dict>
-			<key>type</key>
-			<string>alfred.workflow.action.script</string>
-			<key>uid</key>
-			<string>47FD6543-A4A6-4714-B190-9DF8B5B28444</string>
-			<key>version</key>
-			<integer>2</integer>
-		</dict>
 	</array>
 	<key>readme</key>
 	<string>Browse, search, and open Git repositories from within Alfred.
@@ -291,7 +177,7 @@ GETTING STARTED
 1. Click "Configure Workflow..." above
 2. Under 🖥️ pick apps to open repos with
    (e.g. Default App = VS Code, Cmd App = iTerm)
-3. Under 📂 pick folders containing your Git repos
+3. Under the Search Directory sections, pick folders containing your Git repos
    (e.g. Search Directory 1 = ~/code, Depth = 2)
 4. Type "repos" in Alfred and start searching!
 
@@ -305,8 +191,6 @@ USAGE
     ⇧↩             Open in Shift App
     fn↩            Open in Fn App
 
-  reposupdate      Force refresh the repo list
-  reposhelp        Open help in your browser
 
 CUSTOM REPO ICONS
 
@@ -319,27 +203,9 @@ TIPS
 - Browser apps (Chrome, Safari, Firefox, Arc, etc.) will open the repo's remote URL instead of the local folder.
 - Set "Remote Name" to choose which git remote to use (default: origin).
 - Use "Global Exclude Patterns" to skip directories like node_modules or .cache across all search directories.
-- Use "reposupdate" after changing your search directories to refresh immediately.</string>
+- After changing your search directories the cache rebuilds the next time you open the picker.</string>
 	<key>uidata</key>
 	<dict>
-		<key>13C4EEDF-EC8D-4B23-8693-6E050109AFDC</key>
-		<dict>
-			<key>note</key>
-			<string>Open help file in your browser</string>
-			<key>xpos</key>
-			<real>40.0</real>
-			<key>ypos</key>
-			<real>370.0</real>
-		</dict>
-		<key>227B191C-26EA-4302-B5A1-79CBA4BF107A</key>
-		<dict>
-			<key>note</key>
-			<string>Force update of repo list</string>
-			<key>xpos</key>
-			<real>40.0</real>
-			<key>ypos</key>
-			<real>540.0</real>
-		</dict>
 		<key>25B07D69-2EF2-420F-8B3B-0E7E7CA7B34F</key>
 		<dict>
 			<key>note</key>
@@ -348,13 +214,6 @@ TIPS
 			<real>300.0</real>
 			<key>ypos</key>
 			<real>30.0</real>
-		</dict>
-		<key>47FD6543-A4A6-4714-B190-9DF8B5B28444</key>
-		<dict>
-			<key>xpos</key>
-			<real>300.0</real>
-			<key>ypos</key>
-			<real>540.0</real>
 		</dict>
 		<key>71820CCE-FF52-4077-B790-ACA80D174C54</key>
 		<dict>
@@ -380,13 +239,6 @@ TIPS
 			<real>480.0</real>
 			<key>ypos</key>
 			<real>30.0</real>
-		</dict>
-		<key>FC60057D-548A-4394-9426-1764C21DC6F0</key>
-		<dict>
-			<key>xpos</key>
-			<real>300.0</real>
-			<key>ypos</key>
-			<real>370.0</real>
 		</dict>
 	</dict>
 	<key>userconfigurationconfig</key>
@@ -802,7 +654,7 @@ TIPS
 			<key>description</key>
 			<string>How many levels deep to search (default: 2)</string>
 			<key>label</key>
-			<string>📂 Depth 1</string>
+			<string>Depth</string>
 			<key>type</key>
 			<string>textfield</string>
 			<key>variable</key>
@@ -823,7 +675,7 @@ TIPS
 			<key>description</key>
 			<string>Comma-separated glob patterns to exclude (e.g. tmp, vendor)</string>
 			<key>label</key>
-			<string>📂 Excludes 1</string>
+			<string>Excludes</string>
 			<key>type</key>
 			<string>textfield</string>
 			<key>variable</key>
@@ -844,7 +696,7 @@ TIPS
 			<key>description</key>
 			<string>Name repo after Nth parent directory (1 = immediate parent, 2 = grandparent)</string>
 			<key>label</key>
-			<string>📂 Name for Parent 1</string>
+			<string>Name for Parent</string>
 			<key>type</key>
 			<string>textfield</string>
 			<key>variable</key>
@@ -886,7 +738,7 @@ TIPS
 			<key>description</key>
 			<string>How many levels deep to search (default: 2)</string>
 			<key>label</key>
-			<string>📂 Depth 2</string>
+			<string>Depth</string>
 			<key>type</key>
 			<string>textfield</string>
 			<key>variable</key>
@@ -907,7 +759,7 @@ TIPS
 			<key>description</key>
 			<string>Comma-separated glob patterns to exclude (e.g. tmp, vendor)</string>
 			<key>label</key>
-			<string>📂 Excludes 2</string>
+			<string>Excludes</string>
 			<key>type</key>
 			<string>textfield</string>
 			<key>variable</key>
@@ -928,7 +780,7 @@ TIPS
 			<key>description</key>
 			<string>Name repo after Nth parent directory (1 = immediate parent, 2 = grandparent)</string>
 			<key>label</key>
-			<string>📂 Name for Parent 2</string>
+			<string>Name for Parent</string>
 			<key>type</key>
 			<string>textfield</string>
 			<key>variable</key>
@@ -970,7 +822,7 @@ TIPS
 			<key>description</key>
 			<string>How many levels deep to search (default: 2)</string>
 			<key>label</key>
-			<string>📂 Depth 3</string>
+			<string>Depth</string>
 			<key>type</key>
 			<string>textfield</string>
 			<key>variable</key>
@@ -991,7 +843,7 @@ TIPS
 			<key>description</key>
 			<string>Comma-separated glob patterns to exclude (e.g. tmp, vendor)</string>
 			<key>label</key>
-			<string>📂 Excludes 3</string>
+			<string>Excludes</string>
 			<key>type</key>
 			<string>textfield</string>
 			<key>variable</key>
@@ -1012,7 +864,7 @@ TIPS
 			<key>description</key>
 			<string>Name repo after Nth parent directory (1 = immediate parent, 2 = grandparent)</string>
 			<key>label</key>
-			<string>📂 Name for Parent 3</string>
+			<string>Name for Parent</string>
 			<key>type</key>
 			<string>textfield</string>
 			<key>variable</key>
@@ -1054,7 +906,7 @@ TIPS
 			<key>description</key>
 			<string>How many levels deep to search (default: 2)</string>
 			<key>label</key>
-			<string>📂 Depth 4</string>
+			<string>Depth</string>
 			<key>type</key>
 			<string>textfield</string>
 			<key>variable</key>
@@ -1075,7 +927,7 @@ TIPS
 			<key>description</key>
 			<string>Comma-separated glob patterns to exclude (e.g. tmp, vendor)</string>
 			<key>label</key>
-			<string>📂 Excludes 4</string>
+			<string>Excludes</string>
 			<key>type</key>
 			<string>textfield</string>
 			<key>variable</key>
@@ -1096,7 +948,7 @@ TIPS
 			<key>description</key>
 			<string>Name repo after Nth parent directory (1 = immediate parent, 2 = grandparent)</string>
 			<key>label</key>
-			<string>📂 Name for Parent 4</string>
+			<string>Name for Parent</string>
 			<key>type</key>
 			<string>textfield</string>
 			<key>variable</key>
@@ -1138,7 +990,7 @@ TIPS
 			<key>description</key>
 			<string>How many levels deep to search (default: 2)</string>
 			<key>label</key>
-			<string>📂 Depth 5</string>
+			<string>Depth</string>
 			<key>type</key>
 			<string>textfield</string>
 			<key>variable</key>
@@ -1159,7 +1011,7 @@ TIPS
 			<key>description</key>
 			<string>Comma-separated glob patterns to exclude (e.g. tmp, vendor)</string>
 			<key>label</key>
-			<string>📂 Excludes 5</string>
+			<string>Excludes</string>
 			<key>type</key>
 			<string>textfield</string>
 			<key>variable</key>
@@ -1180,7 +1032,7 @@ TIPS
 			<key>description</key>
 			<string>Name repo after Nth parent directory (1 = immediate parent, 2 = grandparent)</string>
 			<key>label</key>
-			<string>📂 Name for Parent 5</string>
+			<string>Name for Parent</string>
 			<key>type</key>
 			<string>textfield</string>
 			<key>variable</key>
@@ -1211,18 +1063,18 @@ TIPS
 			<key>config</key>
 			<dict>
 				<key>default</key>
-				<string>180</string>
+				<string>30</string>
 				<key>placeholder</key>
-				<string>180</string>
+				<string>30</string>
 				<key>required</key>
 				<false/>
 				<key>trim</key>
 				<true/>
 			</dict>
 			<key>description</key>
-			<string>How often to automatically refresh the repo list (default: 180 = 3 hours)</string>
+			<string>How stale the repo cache is allowed to get before a background refresh kicks in, in seconds (default: 30). The refresh runs when you open the picker and swaps fresh results in-place.</string>
 			<key>label</key>
-			<string>⚙️ Update Interval (minutes)</string>
+			<string>⚙️ Refresh Interval (seconds)</string>
 			<key>type</key>
 			<string>textfield</string>
 			<key>variable</key>

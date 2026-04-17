@@ -23,7 +23,14 @@ from fnmatch import fnmatch
 from multiprocessing.dummy import Pool
 from time import time
 
-from repos import Repo, get_search_dirs_from_env, get_global_excludes, save_config_hash
+from repos import (
+    Repo,
+    enumerate_worktrees,
+    get_branch,
+    get_global_excludes,
+    get_search_dirs_from_env,
+    save_config_hash,
+)
 from workflow import Workflow
 
 # How many search threads to run at the same time
@@ -119,7 +126,7 @@ def find_git_repos(dirpath, excludes, depth, uid, gids, name_for_parent=1):
             else:
                 name = components[-(name_for_parent)]
 
-        results.append(Repo(name, filepath))
+        results.append(Repo(name, filepath, get_branch(filepath), enumerate_worktrees(filepath)))
 
     log.debug('%d repo(s) found in `%s` in %0.2fs', len(results), dirpath,
               time() - start)
@@ -171,7 +178,7 @@ def main(wf):
     for r in results:
         repos += r.get()
 
-    wf.cache_data('repos', repos)
+    wf.cache_data('repos_v2', repos)
     save_config_hash(search_dirs, global_excludes)
 
     log.info('%d repo(s) found in %0.2fs', len(repos), time() - start)

@@ -16,7 +16,6 @@ Find, open and search Git repos on your system.
 
 Usage:
     repos.py search [<query>]
-    repos.py update
     repos.py open <appkey> <path>
 
 Options:
@@ -38,7 +37,7 @@ from workflow.background import is_running, run_in_background
 from workflow.update import Version
 from workflow.notify import notify
 
-DEFAULT_UPDATE_INTERVAL = 180  # minutes
+DEFAULT_UPDATE_INTERVAL = 30  # seconds
 
 UPDATE_SETTINGS = {'github_slug': 'sherifabdlnaby/alfred-repos'}
 
@@ -67,10 +66,13 @@ MODE_CUSTOM = 'custom'
 
 NUM_SEARCH_SLOTS = 5
 
+BRANCH_ICON = '🪾'
+
 log = None
 
 
-Repo = namedtuple('Repo', 'name path')
+Repo = namedtuple('Repo', 'name path branch worktrees')
+Worktree = namedtuple('Worktree', 'name path branch')
 
 
 class AttrDict(dict):
@@ -186,9 +188,7 @@ def get_repos(opts):
         list: Sequence of `Repo` tuples.
 
     """
-    if not wf.cached_data_fresh('repos', max_age=opts.update_interval):
-        do_update()
-    repos = wf.cached_data('repos', max_age=0)
+    repos = wf.cached_data('repos_v2', max_age=0)
 
     if not repos:
         do_update()
@@ -224,6 +224,57 @@ def repo_url(path):
                                   cwd=path).decode('utf-8')
     url = re.sub(r'(^.+@)|(^https://)|(^git://)|(.git$)', '', url)
     return 'https://' + re.sub(r':', '/', url).strip()
+
+
+def get_branch(path):
+    """Return current branch name (or short SHA for detached HEAD) by reading
+    `.git/HEAD` directly. Returns None if unresolvable.
+
+    Avoids spawning `git` per repo, so it's safe to call during search.
+    Handles `.git` files (worktrees, submodules) by following `gitdir:`.
+    """
+    git_path = os.path.join(path, '.git')
+    try:
+        if os.path.isfile(git_path):
+            with open(git_path) as f:
+                line = f.readline().strip()
+            if not line.startswith('gitdir: '):
+                return None
+            gitdir = line[len('gitdir: '):]
+            git_path = gitdir if os.path.isabs(gitdir) else os.path.join(path, gitdir)
+
+        with open(os.path.join(git_path, 'HEAD')) as f:
+            head = f.readline().strip()
+
+        if head.startswith('ref: refs/heads/'):
+            return head[len('ref: refs/heads/'):]
+        return head[:7] if head else None
+    except OSError:
+        return None
+
+
+def enumerate_worktrees(repo_path):
+    """List linked worktrees under `<repo>/.git/worktrees/`. Empty if none.
+
+    Main worktree is excluded; callers synthesize it from the Repo fields.
+    """
+    worktrees_dir = os.path.join(repo_path, '.git', 'worktrees')
+    try:
+        entries = sorted(os.scandir(worktrees_dir), key=lambda e: e.name)
+    except (OSError, NotADirectoryError):
+        return []
+
+    out = []
+    for entry in entries:
+        try:
+            with open(os.path.join(entry.path, 'gitdir')) as f:
+                gitdir = f.readline().strip()
+        except OSError:
+            continue
+        wt_path = os.path.dirname(gitdir)
+        wt_branch = get_branch(wt_path) or entry.name
+        out.append(Worktree(wt_branch, wt_path, wt_branch))
+    return out
 
 
 def _resolve_open_target(mode, custom_path, repo_path):
@@ -309,33 +360,59 @@ def do_search(repos, opts):
                               'Configure this workflow in Alfred Preferences.')
             valid[key] = False
 
-    if opts.query:
-        repos = wf.filter(opts.query, repos, lambda t: t[0], min_score=30)
-        log.info('%d/%d repos match `%s`', len(repos), len(repos), opts.query)
+    if wf.cached_data_age('repos_v2') > opts.update_interval and not is_running('update'):
+        run_in_background('update', ['/usr/bin/env', 'python3', 'update.py'])
+        wf.rerun = 2.0
 
-    if not repos:
-        wf.add_item('No matching repos found', icon=ICON_WARNING)
+    query = opts.query
+    expanded = None
+    if '/' in query:
+        prefix, rest = query.split('/', 1)
+        matches = [r for r in repos if r.name == prefix]
+        if len(matches) == 1:
+            expanded = matches[0]
+            query = rest
+
+    if expanded:
+        items = [Worktree(expanded.name, expanded.path, expanded.branch)]
+        items += expanded.worktrees
+    else:
+        items = repos
+
+    if query:
+        items = wf.filter(query, items, lambda t: t[0], min_score=30)
+        log.info('%d match `%s`', len(items), query)
+
+    if not items:
+        wf.add_item('No matching worktrees found' if expanded else 'No matching repos found',
+                    icon=ICON_WARNING)
 
     home = os.environ['HOME']
-    for r in repos:
+    for r in items:
         log.debug(r)
-        pretty_path = subtitle = r.path.replace(home, '~')
-        app = subtitles.get('default')
+        pretty_path = r.path.replace(home, '~')
+        wt_count = len(r.worktrees) if hasattr(r, 'worktrees') else 0
+        wt_hint = ' (+{} worktree{})'.format(wt_count, '' if wt_count == 1 else 's') \
+            if (not expanded and wt_count) else ''
+        branch_info = '{} {}{}  |  '.format(BRANCH_ICON, r.branch, wt_hint) if r.branch else ''
 
         icon = 'icon.png'
         if os.path.isfile(os.path.dirname(r.path) + '/' + '.alfred-repos-icon.png'):
             icon = os.path.dirname(r.path) + '/' + '.alfred-repos-icon.png'
 
-        if app:
-            subtitle += ' //  ' + app
+        def compose(app_subtitle):
+            sep = '  | ' if branch_info else '  |  '
+            return '{}{}{}{}'.format(app_subtitle, sep, branch_info, pretty_path)
+
         it = wf.add_item(
             r.name,
-            subtitle,
+            compose(subtitles.get('default', '')),
             arg=r.path,
             uid=r.path,
             valid=valid.get('default', False),
             type='file',
-            icon=icon
+            icon=icon,
+            autocomplete=(r.name + '/') if (not expanded and wt_count) else None,
         )
         it.setvar('appkey', 'default')
 
@@ -343,7 +420,7 @@ def do_search(repos, opts):
             if key == 'default':
                 continue
             mod = it.add_modifier(key.replace('_', '+'),
-                                  pretty_path + '  //  ' + subtitles[key],
+                                  compose(subtitles[key]),
                                   arg=r.path, valid=valid[key])
             mod.setvar('appkey', key)
 
@@ -365,7 +442,7 @@ def parse_args():
     log.debug('args=%r', args)
 
     update_interval = int(os.getenv('update_interval',
-                                    str(DEFAULT_UPDATE_INTERVAL))) * 60
+                                    str(DEFAULT_UPDATE_INTERVAL)))
 
     opts = AttrDict(
         query=(args.get('<query>') or '').strip(),
@@ -373,7 +450,6 @@ def parse_args():
         appkey=args.get('<appkey>') or 'default',
         update_interval=update_interval,
         do_search=args.get('search'),
-        do_update=args.get('update'),
         do_open=args.get('open'),
     )
 
@@ -387,9 +463,6 @@ def main(wf):
 
     if opts.do_open:
         return do_open(opts)
-
-    elif opts.do_update:
-        return do_update()
 
     if wf.update_available:
         wf.add_item('Workflow Update is Available',

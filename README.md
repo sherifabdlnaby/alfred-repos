@@ -25,8 +25,24 @@ After installing, click **Configure Workflow...** in Alfred Preferences to set u
   - `^↩` — Open in Ctrl App
   - `⇧↩` — Open in Shift App
   - `fn↩` — Open in Fn App
-- `reposupdate` — Force refresh the repo list
-- `reposhelp` — Open this README in your browser
+  - `⇥` — Expand a repo into its worktrees (see below)
+
+### Worktrees
+
+If a repo has git worktrees, press `⇥` (Tab) on it to drill into them. The main worktree is included. `↩` on a worktree opens its path in the configured app, same as opening a regular repo.
+
+Results that can be expanded carry a `(+N worktrees)` hint next to the branch name.
+
+```
+my-repo          Open in GoLand  | 🪾 main (+2 worktrees)  |  ~/code/my-repo
+
+# Tab
+my-repo          Open in GoLand  | 🪾 main             |  ~/code/my-repo
+feat/login       Open in GoLand  | 🪾 feat/login       |  ~/code/my-repo/.worktree/login
+wt/experiment    Open in GoLand  | 🪾 wt/experiment    |  ~/code/my-repo/.worktree/experiment
+```
+
+The main repo keeps its name on drill-down so it's easy to spot alongside the worktrees.
 
 ## Configuration
 
@@ -60,7 +76,7 @@ You get 5 slots. Each one has:
 ### Advanced
 
 - `Global Exclude Patterns` skips matching directories across all search paths, one pattern per line
-- `Update Interval` is how often (in minutes) the repo list auto-refreshes. Defaults to 180 (3 hours). Run `reposupdate` if you don't want to wait.
+- `Refresh Interval` is how old the repo cache can get (in seconds) before a background refresh kicks in on the next picker open. Default `30`. The refresh runs while you search and fresh results swap in-place.
 
 ### Custom icons
 
