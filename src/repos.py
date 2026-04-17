@@ -38,7 +38,7 @@ from workflow.background import is_running, run_in_background
 from workflow.update import Version
 from workflow.notify import notify
 
-DEFAULT_UPDATE_INTERVAL = 1  # minutes
+DEFAULT_UPDATE_INTERVAL = 30  # seconds
 
 UPDATE_SETTINGS = {'github_slug': 'sherifabdlnaby/alfred-repos'}
 
@@ -189,8 +189,6 @@ def get_repos(opts):
         list: Sequence of `Repo` tuples.
 
     """
-    if not wf.cached_data_fresh('repos_v2', max_age=opts.update_interval):
-        do_update()
     repos = wf.cached_data('repos_v2', max_age=0)
 
     if not repos:
@@ -363,7 +361,7 @@ def do_search(repos, opts):
                               'Configure this workflow in Alfred Preferences.')
             valid[key] = False
 
-    if wf.cached_data_age('repos_v2') > 30 and not is_running('update'):
+    if wf.cached_data_age('repos_v2') > opts.update_interval and not is_running('update'):
         run_in_background('update', ['/usr/bin/env', 'python3', 'update.py'])
         wf.rerun = 2.0
 
@@ -445,7 +443,7 @@ def parse_args():
     log.debug('args=%r', args)
 
     update_interval = int(os.getenv('update_interval',
-                                    str(DEFAULT_UPDATE_INTERVAL))) * 60
+                                    str(DEFAULT_UPDATE_INTERVAL)))
 
     opts = AttrDict(
         query=(args.get('<query>') or '').strip(),
