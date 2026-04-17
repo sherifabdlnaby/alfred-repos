@@ -394,17 +394,17 @@ def do_search(repos, opts):
     for r in items:
         log.debug(r)
         pretty_path = r.path.replace(home, '~')
-        branch_info = '{} {}  |  '.format(BRANCH_ICON, r.branch) if r.branch else ''
         wt_count = len(r.worktrees) if hasattr(r, 'worktrees') else 0
-        wt_hint = '  (+{} worktree{})'.format(wt_count, '' if wt_count == 1 else 's') \
+        wt_hint = ' (+{} worktree{})'.format(wt_count, '' if wt_count == 1 else 's') \
             if (not expanded and wt_count) else ''
+        branch_info = '{} {}{}  |  '.format(BRANCH_ICON, r.branch, wt_hint) if r.branch else ''
 
         icon = 'icon.png'
         if os.path.isfile(os.path.dirname(r.path) + '/' + '.alfred-repos-icon.png'):
             icon = os.path.dirname(r.path) + '/' + '.alfred-repos-icon.png'
 
         def compose(app_subtitle):
-            return '{}  |  {}{}{}'.format(app_subtitle, branch_info, pretty_path, wt_hint)
+            return '{}  |  {}{}'.format(app_subtitle, branch_info, pretty_path)
 
         it = wf.add_item(
             r.name,
