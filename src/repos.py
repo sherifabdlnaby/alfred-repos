@@ -16,7 +16,6 @@ Find, open and search Git repos on your system.
 
 Usage:
     repos.py search [<query>]
-    repos.py update
     repos.py open <appkey> <path>
 
 Options:
@@ -451,7 +450,6 @@ def parse_args():
         appkey=args.get('<appkey>') or 'default',
         update_interval=update_interval,
         do_search=args.get('search'),
-        do_update=args.get('update'),
         do_open=args.get('open'),
     )
 
@@ -465,9 +463,6 @@ def main(wf):
 
     if opts.do_open:
         return do_open(opts)
-
-    elif opts.do_update:
-        return do_update()
 
     if wf.update_available:
         wf.add_item('Workflow Update is Available',
