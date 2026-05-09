@@ -360,8 +360,11 @@ def do_search(repos, opts):
                               'Configure this workflow in Alfred Preferences.')
             valid[key] = False
 
-    if wf.cached_data_age('repos_v2') > opts.update_interval and not is_running('update'):
-        run_in_background('update', ['/usr/bin/env', 'python3', 'update.py'])
+    needs_refresh = (
+        wf.cached_data_age('repos_v2') > opts.update_interval
+        and not is_running('update')
+    )
+    if needs_refresh:
         wf.rerun = 2.0
 
     query = opts.query
@@ -425,6 +428,10 @@ def do_search(repos, opts):
             mod.setvar('appkey', key)
 
     wf.send_feedback()
+
+    if needs_refresh:
+        run_in_background('update', ['/usr/bin/env', 'python3', 'update.py'])
+
     return 0
 
 
