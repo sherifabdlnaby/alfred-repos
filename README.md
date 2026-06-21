@@ -33,7 +33,7 @@ If a repo has git worktrees, press `⇥` (Tab) on it to drill into them. The mai
 
 Results that can be expanded carry a `(+N worktrees)` hint next to the branch name.
 
-```
+```text
 my-repo          Open in GoLand  | 🪾 main (+2 worktrees)  |  ~/code/my-repo
 
 # Tab
@@ -82,6 +82,43 @@ You get 5 slots. Each one has:
 
 Drop a `.alfred-repos-icon.png` file in a directory and all repos under it will use that icon in Alfred results. For example, `~/code/github/.alfred-repos-icon.png` applies to everything in `~/code/github/`.
 
+## Development
+
+This repo uses [**mise**](https://mise.jdx.dev) to pin its tools (Python, uv, linters), expose tasks, and wire git hooks, so everyone builds with the same versions and commands.
+
+<details>
+<summary><b>Install mise (first time on this machine)</b></summary>
+
+```sh
+brew install mise          # or: curl https://mise.run | sh
+echo 'eval "$(mise activate zsh)"' >> ~/.zshrc   # bash: mise activate bash >> ~/.bashrc
+mise doctor                # confirm the install is healthy
+```
+
+See the [installation docs](https://mise.jdx.dev/installing-mise.html) for other platforms.
+
+</details>
+
+Set up the project from the repo root:
+
+```sh
+mise trust      # allow this repo's mise config to load
+mise run setup  # install pinned tools + sync deps (git hooks self-install via mise)
+```
+
+Everyday commands:
+
+| Command                                  | What it does                                                          |
+| ---------------------------------------- | --------------------------------------------------------------------- |
+| `mise run check` (alias `mise run lint`) | Run all linters, formatters, and validators. Add `--fix` to auto-fix. |
+| `mise run build`                         | Vendor deps into `src/` and zip the `.alfredworkflow`.                |
+| `mise run clean`                         | Remove `build/` and vendored deps from `src/`.                        |
+| `mise tasks`                             | List every available task.                                            |
+
+Run `mise run <task> --help` for a task's options.
+
+On **commit**, [hk](https://hk.jdx.dev) formats and lints your staged files — the same `check` that runs in CI, so problems surface before you push. Skip it for a WIP commit with `git commit --no-verify`.
+
 ## Issues
 
 File bugs or feature requests on [GitHub issues][gh-issues].
@@ -106,7 +143,6 @@ Icons from [git-scm.com][git] ([CC BY 3.0][license-cc])
 [gh-releases]: https://github.com/sherifabdlnaby/alfred-repos/releases
 [git]: https://git-scm.com/downloads/logos
 [license-cc]: https://creativecommons.org/licenses/by/3.0/
-[license-docopt]: https://github.com/docopt/docopt/blob/master/LICENSE-MIT
 [license-mit]: https://opensource.org/licenses/MIT
 [shield-downloads]: https://img.shields.io/github/downloads/sherifabdlnaby/alfred-repos/total.svg
 [shield-license]: https://img.shields.io/github/license/sherifabdlnaby/alfred-repos.svg
