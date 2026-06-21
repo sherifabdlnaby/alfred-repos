@@ -1,9 +1,7 @@
 name: Release
-
 # PR merge → semver tag → build .alfredworkflow → publish release
 # PR labels control version bump: major, minor, patch (default), skip-release
 # Manual trigger also supported via workflow_dispatch (with optional draft mode)
-
 on:
   push:
     branches:
@@ -21,41 +19,44 @@ on:
         required: false
         type: boolean
         default: false
-
+# Default to read-only; each job opts into the writes it actually needs.
 permissions:
-  contents: write
-  pull-requests: write
-
+  contents: read
 jobs:
   # ── Autolabel PRs ───────────────────────────────────────────────────
   autolabel:
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write # release-drafter labels the PR
     steps:
-      - uses: actions/checkout@v4
-      - uses: release-drafter/release-drafter@v5
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        with:
+          persist-credentials: false
+      - uses: release-drafter/release-drafter@09c613e259eb8d4e7c81c2cb00618eb5fc4575a7 # v5.25.0
         with:
           config-name: auto-release.yml
           disable-releaser: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
   # ── Determine version ──────────────────────────────────────────────
   version:
     if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
+    permissions:
+      contents: read # only reads git history + PR metadata
     outputs:
       new_tag: ${{ steps.version.outputs.new_tag }}
       version: ${{ steps.version.outputs.version }}
       pr_number: ${{ steps.pr.outputs.number }}
     env:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
         with:
           fetch-depth: 0
-
+          persist-credentials: false
       - name: Find merged PR and determine bump
         if: github.event_name == 'push'
         id: pr
@@ -65,41 +66,41 @@ jobs:
 
           if [ -z "$PR_JSON" ]; then
             echo "No merged PR found for commit ${{ github.sha }}, skipping release"
-            echo "skip=true" >> $GITHUB_OUTPUT
+            echo "skip=true" >> "$GITHUB_OUTPUT"
             exit 0
           fi
 
           PR_NUM=$(echo "$PR_JSON" | jq -r '.number')
           LABELS=$(echo "$PR_JSON" | jq -r '[.labels[].name] | join(",")')
-          echo "number=$PR_NUM" >> $GITHUB_OUTPUT
-          echo "labels=$LABELS" >> $GITHUB_OUTPUT
+          echo "number=$PR_NUM" >> "$GITHUB_OUTPUT"
+          echo "labels=$LABELS" >> "$GITHUB_OUTPUT"
           echo "Found merged PR #$PR_NUM with labels: $LABELS"
 
           if echo "$LABELS" | grep -q "skip-release"; then
             echo "skip-release label found, skipping"
-            echo "skip=true" >> $GITHUB_OUTPUT
+            echo "skip=true" >> "$GITHUB_OUTPUT"
             exit 0
           fi
 
           if echo "$LABELS" | grep -q "major"; then
-            echo "bump=major" >> $GITHUB_OUTPUT
+            echo "bump=major" >> "$GITHUB_OUTPUT"
           elif echo "$LABELS" | grep -q "minor"; then
-            echo "bump=minor" >> $GITHUB_OUTPUT
+            echo "bump=minor" >> "$GITHUB_OUTPUT"
           else
-            echo "bump=patch" >> $GITHUB_OUTPUT
+            echo "bump=patch" >> "$GITHUB_OUTPUT"
           fi
-
       - name: Compute next version
         if: >-
-          (github.event_name == 'push' && steps.pr.outputs.skip != 'true') ||
-          github.event_name == 'workflow_dispatch'
+          (github.event_name == 'push' && steps.pr.outputs.skip != 'true') || github.event_name == 'workflow_dispatch'
         id: version
+        env:
+          INPUT_VERSION: ${{ inputs.version }} # user-controllable; via env, never interpolated into the shell (zizmor: template-injection)
         run: |
-          if [ -n "${{ inputs.version }}" ]; then
-            NEW_TAG="${{ inputs.version }}"
+          if [ -n "$INPUT_VERSION" ]; then
+            NEW_TAG="$INPUT_VERSION"
             [[ "$NEW_TAG" != v* ]] && NEW_TAG="v${NEW_TAG}"
-            echo "new_tag=$NEW_TAG" >> $GITHUB_OUTPUT
-            echo "version=${NEW_TAG#v}" >> $GITHUB_OUTPUT
+            echo "new_tag=$NEW_TAG" >> "$GITHUB_OUTPUT"
+            echo "version=${NEW_TAG#v}" >> "$GITHUB_OUTPUT"
             echo "Manual release: $NEW_TAG"
             exit 0
           fi
@@ -127,21 +128,21 @@ jobs:
           esac
 
           NEW_TAG="v${MAJOR}.${MINOR}.${PATCH}"
-          echo "new_tag=$NEW_TAG" >> $GITHUB_OUTPUT
-          echo "version=${MAJOR}.${MINOR}.${PATCH}" >> $GITHUB_OUTPUT
+          echo "new_tag=$NEW_TAG" >> "$GITHUB_OUTPUT"
+          echo "version=${MAJOR}.${MINOR}.${PATCH}" >> "$GITHUB_OUTPUT"
           echo "Version bump: $BUMP ($LATEST_TAG -> $NEW_TAG)"
-
   # ── Build and release ──────────────────────────────────────────────
   release:
     needs: version
     if: needs.version.outputs.new_tag != ''
     runs-on: ubuntu-latest
+    permissions:
+      contents: write # push the tag + create the GitHub release
+      pull-requests: write # comment the release link back on the PR
     env:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
     steps:
-      - uses: actions/checkout@v4
-
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1 # zizmor: ignore[artipacked] -- this job pushes the release tag, so it needs the checkout credentials persisted
       - name: Create and push tag
         run: |
           TAG="${{ needs.version.outputs.new_tag }}"
@@ -153,30 +154,23 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git tag -a "${TAG}" -m "Release ${TAG}"
           git push origin "${TAG}"
-
-      - uses: actions/setup-python@v5
+      - name: Setup mise
+        uses: jdx/mise-action@dba19683ed58901619b14f395a24841710cb4925 # v4.1.0
         with:
-          python-version: "3.12"
-
-      - name: Install uv
-        uses: astral-sh/setup-uv@v4
-
-      - name: Install dependencies into src/
-        run: uv pip install --target src/ alfred-pyworkflow docopt --quiet --system
-
+          install: true
+          install_args: "--locked" # honor mise.lock
+          cache: true
+          experimental: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # so tool installs don't hit API rate limits
       - name: Build .alfredworkflow
         env:
           VERSION: ${{ needs.version.outputs.new_tag }}
-        working-directory: ./src
         run: |
           set -e
-          version_without_v=$(echo "${VERSION}" | sed 's/^v//')
-          sed -i "s/1.3.37/${version_without_v}/g" "./info.plist"
-
-          mkdir -p build
-          find . -not -path '*/build*' -not -path '*/__pycache__/*' -not -name '*.pyc' -exec zip --symlinks "build/alfred-repos-${VERSION}.alfredworkflow" {} +
-          echo "artifactPath=${PWD}/build/alfred-repos-${VERSION}.alfredworkflow" >> $GITHUB_ENV
-
+          # Same build task local dev runs; --version stamps the tag into info.plist.
+          mise run build --version "${VERSION}"
+          echo "artifactPath=${PWD}/build/alfred-repos-${VERSION}.alfredworkflow" >> "$GITHUB_ENV"
       - name: Create release with artifact
         run: |
           TAG="${{ needs.version.outputs.new_tag }}"
@@ -189,7 +183,6 @@ jobs:
             --generate-notes \
             --latest \
             $DRAFT_FLAG
-
       - name: Comment on PR
         if: github.event_name == 'push' && needs.version.outputs.pr_number != ''
         run: |
