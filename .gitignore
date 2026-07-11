@@ -32,3 +32,6 @@ dist/
 # Env
 .env
 .cache
+
+# mise local overrides (never commit)
+mise.local.toml

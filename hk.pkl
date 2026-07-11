@@ -1,6 +1,6 @@
 // hk.pkl — git hooks for hk. See https://hk.jdx.dev. Pinned to the installed hk (`hk version`).
-amends "package://github.com/jdx/hk/releases/download/v1.47.0/hk@1.47.0#/Config.pkl"
-import "package://github.com/jdx/hk/releases/download/v1.47.0/hk@1.47.0#/Builtins.pkl"
+amends "package://github.com/jdx/hk/releases/download/v1.48.0/hk@1.48.0#/Config.pkl"
+import "package://github.com/jdx/hk/releases/download/v1.48.0/hk@1.48.0#/Builtins.pkl"
 
 // Repo-wide ignores — committed paths only (.gitignore is already honored).
 // Excludes vendored third-party deps and build artifacts from every step.
@@ -40,7 +40,16 @@ local linters: Mapping<String, Step> = new Mapping<String, Step> {
   // GitHub Actions
   ["actionlint"] = Builtins.actionlint
   ["zizmor"] = Builtins.zizmor
-  ["pinact"] = Builtins.pinact
+  // pinact needs a GitHub token (rate limit). Prefer $GITHUB_TOKEN (CI); locally fall back to `gh`.
+  // hk env is static, so prepend onto the builtin's own command. See hk.md.
+  ["pinact"] = (Builtins.pinact) {
+    check_diff =
+      "PINACT_GITHUB_TOKEN=\"${GITHUB_TOKEN:-$(gh auth token 2>/dev/null || true)}\" "
+        + Builtins.pinact.check_diff
+    fix =
+      "PINACT_GITHUB_TOKEN=\"${GITHUB_TOKEN:-$(gh auth token 2>/dev/null || true)}\" "
+        + Builtins.pinact.fix
+  }
 
   // Secrets & spelling
   ["betterleaks"] = Builtins.betterleaks
@@ -69,6 +78,13 @@ hooks {
   // `git push` — no-op; add slower gates here.
   ["pre-push"] {
     steps {
+    }
+  }
+
+  // Commit message ({{commit_msg_file}}) — no-op.
+  ["commit-msg"] {
+    steps {
+    // ["conventional-commit"] = Builtins.check_conventional_commit
     }
   }
 }
