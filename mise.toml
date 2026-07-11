@@ -1,13 +1,13 @@
 # Minimum `mise` version. If not matched, mise guides the user to update.
 # -> Bump when relying on a newly introduced setting.
-min_version = "2026.6.4" # CVE floor; raise as needed.
+min_version = "2026.6.6" # CVE floor; raise as needed.
 
 # ── 🛠️ tools ──────────────────────────────────────────────────────────────────
 [tools]
 
 # runtimes
 python = "3.12"
-uv = "latest"   # package manager / venv (no stable major to pin against here)
+uv = "0.11"     # package manager / venv (0.x → pin minor)
 
 # linters & formatters
 ruff = "0.15"       # Python lint + format
@@ -24,7 +24,7 @@ pinact = "4"        # GitHub Actions pin SHAs
 betterleaks = "1"   # secret scanner
 
 # pre-commit
-hk = "1.47.0" # full MAJOR.MINOR.PATCH — git-tag backend (matches `hk init`)
+hk = "1.48.0" # full MAJOR.MINOR.PATCH — git-tag backend (matches `hk init`)
 
 # ── 📏 vars ───────────────────────────────────────────────────────────────────
 [vars]
@@ -123,8 +123,8 @@ run = '[ "$(cat .mise/setup 2>/dev/null)" = "{{vars.setup_version}}" ] || echo "
 
 # ── 🪝 hooks ──────────────────────────────────────────────────────────────────
 [hooks]
-enter = "mise run setup:check"    # nudge users when their setup is stale (see vars.setup_version)
-postinstall = "hk install --mise" # canonical hook install: runs after every `mise install`, idempotent
+enter = "MISE_OFFLINE=1 mise run setup:check" # nudge when setup is stale; MISE_OFFLINE keeps cd offline-safe
+postinstall = "hk install --mise"             # canonical hook install: runs after every `mise install`, idempotent
 
 # ── ⚙️ settings ───────────────────────────────────────────────────────────────
 [settings]
