@@ -29,4 +29,4 @@ mise run clean                 # remove build/ and vendored deps
   - `major` / `minor` / `patch` — semver bump
   - `skip-release` — merge without tagging (CI, docs-only, chore)
 - Category labels (`feature`, `bug`, `docs`, `ci`, …) group the generated release notes; the autolabeler applies many of them from the title/files
-- Unlabeled merges fall back to `patch` (the gate fails on the PR so this is the escape hatch, not the happy path)
+- Unlabeled merges fall back to `minor` (the gate fails on the PR so this is the escape hatch, not the happy path)
