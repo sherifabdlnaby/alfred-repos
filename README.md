@@ -18,9 +18,14 @@ Every release bundle ships with a build provenance attestation. To verify it cam
 
 ```bash
 gh attestation verify alfred-repos-<tag>.alfredworkflow --owner sherifabdlnaby
+sha256sum --check checksums.txt
 ```
 
 After installing, click **Configure Workflow...** in Alfred Preferences to set up your search directories and apps.
+
+### Cutting a release
+
+Merges to `main` are tagged automatically from the PR's bump label (`major` / `minor` / `patch`, or `skip-release`). See [CONTRIBUTING.md](.github/CONTRIBUTING.md).
 
 ## Usage
 

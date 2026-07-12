@@ -1,6 +1,6 @@
 [project]
 name = "alfred-repos"
-version = "4.3.0"
+version = "6.0.5"
 description = "Browse, search and open local Git repositories with Alfred"
 readme = "README.md"
 license = "MIT"

@@ -15,21 +15,18 @@ Thanks for your interest in contributing! Please read the [Code of Conduct](CODE
 This project uses [mise](https://mise.jdx.dev/) and [uv](https://docs.astral.sh/uv/) for tooling.
 
 ```bash
-# Install tools via mise
-mise install
-
-# Install dependencies
-mise run setup
-
-# Build the .alfredworkflow
-mise run build
-
-# Clean build artifacts
-mise run clean
+mise trust && mise run setup   # install tools, sync deps, install git hooks
+mise run check                 # lint / format / validate (add --fix to auto-fix)
+mise run build                 # zip the .alfredworkflow
+mise run clean                 # remove build/ and vendored deps
 ```
 
 ## Pull Requests
 
 - Keep changes focused and atomic
 - Use descriptive PR titles (they feed into release notes)
-- Add appropriate labels: `feature`, `fix`, `chore`, `docs`, etc.
+- Add **one bump label** so the release gate knows what to cut on merge:
+  - `major` / `minor` / `patch` — semver bump
+  - `skip-release` — merge without tagging (CI, docs-only, chore)
+- Category labels (`feature`, `bug`, `docs`, `ci`, …) group the generated release notes; the autolabeler applies many of them from the title/files
+- Unlabeled merges fall back to `patch` (the gate fails on the PR so this is the escape hatch, not the happy path)

@@ -22,10 +22,14 @@ Prefer `mise run <task>` over calling the tool directly, so local, hooks, and CI
 
 Commits run [hk](https://hk.jdx.dev), the same `check` CI runs, to format and lint staged files. Fix failures with `mise run check --fix`. Don't disable steps to push a commit through; `git commit --no-verify` skips hooks for a WIP commit.
 
+## Releases
+
+Merging to `main` with a bump label (`major` / `minor` / `patch`) tags, builds the `.alfredworkflow`, attests provenance, and publishes a GitHub Release. Use `skip-release` when the change should not cut a version. Category labels (`feature`, `bug`, `docs`, `ci`, …) only group the generated notes. Manual RC: Actions → Release → `prerelease: true`.
+
 ## Project notes
 
 - `src/` holds the workflow source (`repos.py`, `update.py`, `info.plist`) **and** vendored third-party deps (`workflow/`, `docopt.py`, `*.dist-info/`) that `mise run build` installs into it. The vendored paths are gitignored and excluded from linting (see `hk.pkl`'s `commonIgnores`); never edit or lint them.
-- `info.plist` carries a placeholder version (`1.3.37`). `mise run build --version vX.Y.Z` stamps the real version into a throwaway copy at build time, then restores the placeholder.
+- `info.plist` carries a placeholder version (`1.3.37`). `mise run build --version vX.Y.Z` stamps the real version into a throwaway copy at build time, then restores the placeholder. Git tags are the source of truth for shipped versions (`pyproject.toml` version is informational only).
 - `mise run clean` removes `build/` and the vendored deps from `src/`.
 
 ## Extending the setup

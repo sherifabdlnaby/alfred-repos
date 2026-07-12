@@ -1,6 +1,7 @@
 # Drives the project's own `mise run check` (the same task local dev + the pre-commit
 # hook use) and reports lint/format failures. On a PR it leaves one sticky comment
-# pointing the author at `mise run check --fix`. See references/ci.md.
+# pointing the author at `mise run check --fix`. Also validates `mise run build` so a
+# broken package cannot merge undetected. See references/platforms/github.md (cicd skill).
 name: 🎨 Linters, Validators, and Formatters
 on:
   pull_request: {}
@@ -26,6 +27,7 @@ jobs:
   check:
     name: check
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     permissions:
       contents: read
       pull-requests: write # sticky comment pointing the author at the fix command
@@ -106,3 +108,30 @@ jobs:
             } else if (existing) {
               await github.rest.issues.deleteComment({ owner, repo, comment_id: existing.id });
             }
+  # Smoke-test the packaged artifact on every PR / schedule so a broken build cannot merge.
+  build:
+    name: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        with:
+          persist-credentials: false
+      - name: Setup mise
+        uses: jdx/mise-action@dba19683ed58901619b14f395a24841710cb4925 # v4.1.0
+        with:
+          install: true
+          install_args: "--locked"
+          cache: true
+          experimental: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build .alfredworkflow
+        run: |
+          set -euo pipefail
+          # Throwaway version stamp; release.yml stamps the real tag on publish.
+          mise run build --version v0.0.0-ci
+          test -f build/alfred-repos-v0.0.0-ci.alfredworkflow
