@@ -14,6 +14,12 @@ Browse, search and open local Git repositories with [Alfred][alfred].
 
 Download the [latest release][gh-latest-release] and open the `.alfredworkflow` file.
 
+Every release bundle ships with a build provenance attestation. To verify it came from this repo's CI before installing:
+
+```bash
+gh attestation verify alfred-repos-<tag>.alfredworkflow --owner sherifabdlnaby
+```
+
 After installing, click **Configure Workflow...** in Alfred Preferences to set up your search directories and apps.
 
 ## Usage
