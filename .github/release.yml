@@ -1,0 +1,27 @@
+# GitHub-native release notes grouping — read by `gh release create --generate-notes`.
+# Buckets merged PRs by their category labels (applied by the autolabel job in release.yml,
+# config .github/auto-release.yml). Keep these categories in sync with that autolabeler.
+changelog:
+  categories:
+    - title: 🚀 Enhancements
+      labels:
+        - enhancement
+        - feature
+        - patch
+    - title: ⬆️ Upgrades
+      labels:
+        - upgrades
+    - title: 🐛 Bug Fixes
+      labels:
+        - fix
+        - bug
+        - hotfix
+    - title: 🤖 Automatic Updates
+      labels:
+        - auto-update
+    - title: 📝 Documentation
+      labels:
+        - docs
+    - title: Other Changes
+      labels:
+        - "*"
