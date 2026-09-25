@@ -5,7 +5,9 @@
 [extend]
 useDefault = true
 
-[allowlist]
+# The whole block stays commented: an [allowlist] with no entries is a hard config error.
+# Uncomment it together with at least one entry.
+# [allowlist]
 # paths = [
 #   '''src/workflow/.*''',
 # ]

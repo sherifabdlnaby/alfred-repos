@@ -20,7 +20,7 @@ Prefer `mise run <task>` over calling the tool directly, so local, hooks, and CI
 
 ## Git hooks (hk)
 
-Commits run [hk](https://hk.jdx.dev), the same `check` CI runs, to format and lint staged files. Fix failures with `mise run check --fix`. Don't disable steps to push a commit through; `git commit --no-verify` skips hooks for a WIP commit.
+`mise run setup` installs the hooks (on Git 2.54+ they live in git config, so an empty `.git/hooks/` does not mean no hooks). Commits run the [hk](https://hk.jdx.dev) commit gates on staged files, and a push runs the push gates; CI runs both as `mise run check`, so a green commit is not yet a green CI. Fix failures with `mise run check --fix`. For a shorter loop, target steps with `mise run check --step <name>` or skip them with `--skip-step <name>`. Don't disable steps to push a commit through; `git commit --no-verify` skips hooks for a WIP commit.
 
 ## Releases
 
@@ -28,18 +28,17 @@ Merging to `main` with a bump label (`major` / `minor` / `patch`) tags, builds t
 
 ## Project notes
 
-- `src/` holds the workflow source (`repos.py`, `update.py`, `info.plist`) **and** vendored third-party deps (`workflow/`, `docopt.py`, `*.dist-info/`) that `mise run build` installs into it. The vendored paths are gitignored and excluded from linting (see `hk.pkl`'s `commonIgnores`); never edit or lint them.
+- `src/` holds the workflow source (`repos.py`, `update.py`, `info.plist`) **and** vendored third-party deps (`workflow/`, `docopt.py`, `*.dist-info/`) that `mise run build` installs into it. The vendored paths are gitignored and excluded from linting (see `.config/hk.pkl`'s `commonIgnores`); never edit or lint them.
 - `info.plist` carries a placeholder version (`1.3.37`). `mise run build --version vX.Y.Z` stamps the real version into a throwaway copy at build time, then restores the placeholder. Git tags are the source of truth for shipped versions (`pyproject.toml` version is informational only).
 - `mise run clean` removes `build/` and the vendored deps from `src/`.
 
 ## Extending the setup
 
-Changing tools, tasks, env, or hooks? Edit the config, don't bolt on scripts, then run `mise run check`. Where things live:
+Changing tools, tasks, env, mise hooks, or pre-commit hooks? Edit the config, don't bolt on scripts, then run `mise run check`. Where things live:
 
-- **`mise.toml`**: the source of truth for `[tools]`, `[tasks]`, `[vars]`, `[settings]`, and `[hooks]`.
-- **`mise.lock`**: resolved versions plus checksums. Commit it; regenerate with `mise install` then `mise lock --platform macos-arm64,linux-x64` after a `[tools]` change.
-- **`.mise/`**: committed scaffold; the setup stamp (`.mise/setup`) is gitignored and written by `setup`/`enter`.
-- **`hk.pkl`**: the pre-commit and `check` pipeline (linters and formatters, in Pkl). Add or edit a lint step here.
-- Linter config scaffolds live at the repo root (`typos.toml`, `.betterleaks.toml`, `lychee.toml`, `rumdl.toml`, `.yamllint`) and `.github/zizmor.yml`.
+- **`mise.toml`**: the source of truth for `[tools]`, `[tasks]`, `[env]`/`[vars]`, `[settings]`, `[hooks]`, and prerequisite `[doctor.checks]`.
+- **`mise.lock`**: resolved versions plus checksums for every platform. Commit it; regenerate with `mise lock` after a `[tools]` change.
+- **`.config/mise/`**: project-local state, like the gitignored setup stamp the `setup`/`enter` hooks read. File tasks (for logic longer than a few lines) live in `.config/mise/tasks/`.
+- **`.config/hk.pkl`**: the pre-commit and `check` pipeline (linters and formatters, in Pkl). Add or edit a lint step here, in the commit or push tier; linter configs live beside it in `.config/` (zizmor's stays at `.github/zizmor.yml`).
 
 For tool, task, and hook syntax, see the [mise](https://mise.jdx.dev) and [hk](https://hk.jdx.dev) docs.

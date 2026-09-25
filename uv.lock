@@ -10,7 +10,7 @@ sdist = { url = "https://files.pythonhosted.org/packages/9e/85/dfe04b23c42382e83
 
 [[package]]
 name = "alfred-repos"
-version = "4.3.0"
+version = "6.0.5"
 source = { editable = "." }
 dependencies = [
     { name = "alfred-pyworkflow" },

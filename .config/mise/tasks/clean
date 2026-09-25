@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+#MISE description="Clean build artifacts and vendored deps from src/"
+set -euo pipefail
+rm -rf build/
+rm -rf src/workflow/ src/docopt.py src/docopt/
+rm -rf src/*.dist-info src/*.egg-info src/.lock
+echo "Cleaned build artifacts"
