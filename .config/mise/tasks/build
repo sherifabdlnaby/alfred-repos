@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+#MISE description="Build the .alfredworkflow package"
+#USAGE flag "--version <version>" help="version string to stamp into info.plist (e.g. v4.3.0)"
+set -euo pipefail
+
+# Vendor runtime deps into src/, then zip src/ into a distributable .alfredworkflow.
+# The plist carries a placeholder version (1.3.37); stamp the real one in when --version is given.
+rm -rf build/
+mkdir -p build/
+uv pip install --target src/ alfred-pyworkflow docopt --quiet
+
+if [ -n "${usage_version:-}" ]; then
+  version_without_v="${usage_version#v}"
+  artifact="build/alfred-repos-${usage_version}.alfredworkflow"
+  # Stamp the version in, build, then restore the placeholder so the working tree stays clean.
+  cp src/info.plist src/info.plist.bak
+  sed "s/1\\.3\\.37/${version_without_v}/g" src/info.plist.bak >src/info.plist
+  trap 'mv -f src/info.plist.bak src/info.plist' EXIT
+else
+  artifact="build/alfred-repos.alfredworkflow"
+fi
+
+(cd src && zip -r "../${artifact}" . -x '*.pyc' '*/__pycache__/*' '*.egg-info/*')
+echo "Built ${artifact}"
