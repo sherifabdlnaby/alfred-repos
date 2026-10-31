@@ -1,7 +1,7 @@
 // hk.pkl: git hooks for hk. See https://hk.jdx.dev.
 // Both URLs pin the hk version; keep them equal to the hk in mise.toml [tools] and bump them together.
-amends "package://github.com/jdx/hk/releases/download/v2.0.1/hk@2.0.1#/Config.pkl"
-import "package://github.com/jdx/hk/releases/download/v2.0.1/hk@2.0.1#/Builtins.pkl"
+amends "package://github.com/jdx/hk/releases/download/v2.8.1/hk@2.8.1#/Config.pkl"
+import "package://github.com/jdx/hk/releases/download/v2.8.1/hk@2.8.1#/Builtins.pkl"
 
 // Repo-wide ignores: committed paths only (.gitignore is already honored). Per-step `exclude` stacks on top.
 // Excludes vendored third-party deps and build artifacts from every step.
@@ -26,6 +26,12 @@ local function withFlag(spec: CommandSpec, bin: String, flag: String): CommandSp
 
 // Commit gates: run on every commit. File-scoped, fast, auto-fixable.
 local commitGates: Mapping<String, Step> = new Mapping<String, Step> {
+  // A typo in hk.pkl leaves a step that checks nothing and passes.
+  ["hk-validate"] {
+    glob = ".config/hk.pkl"
+    check = "hk validate --deny-warnings"
+  }
+
   // Python. hk hands ruff a few files per run, so its cache buys nothing and costs a root dir.
   ["ruff"] = (Builtins.ruff) { env { ["RUFF_NO_CACHE"] = "true" } }
   ["ruff_format"] = (Builtins.ruff_format) { env { ["RUFF_NO_CACHE"] = "true" } }
@@ -35,11 +41,13 @@ local commitGates: Mapping<String, Step> = new Mapping<String, Step> {
   ["trailing_whitespace"] = Builtins.trailing_whitespace
   ["mixed_line_ending"] = Builtins.mixed_line_ending
   ["byte_order_marker"] = Builtins.byte_order_marker
-  ["check_added_large_files"] = Builtins.check_added_large_files
+  // The README demo gif is the one large file we keep on purpose.
+  ["check_added_large_files"] = (Builtins.check_added_large_files) { exclude = List("img/preview.gif") }
   ["check_executables_have_shebangs"] = Builtins.check_executables_have_shebangs
   ["check_case_conflict"] = Builtins.check_case_conflict
   ["check_merge_conflict"] = Builtins.check_merge_conflict
   ["check_symlinks"] = Builtins.check_symlinks
+  ["destroyed_symlinks"] = Builtins.destroyed_symlinks
   ["detect_private_key"] = Builtins.detect_private_key
 
   // Config-file formats
@@ -49,7 +57,7 @@ local commitGates: Mapping<String, Step> = new Mapping<String, Step> {
   ["yamlfmt"] = Builtins.yamlfmt
 
   // GitHub Actions
-  ["actionlint"] = Builtins.actionlint
+  ["jactionlint"] = Builtins.jactionlint
   ["zizmor"] = Builtins.zizmor
   // pinact resolves Action tags to SHAs via the GitHub API, so it needs a token or it hits the
   // anonymous rate limit. Prefer $GITHUB_TOKEN (CI injects it); locally fall back to the dev's `gh`

@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# encoding: utf-8
 #
 # Copyright (c) 2026 Sherif Abdel-Naby <sherifabdlnaby@gmail.com>
 # Copyright (c) 2022 Thomas Harr <xDevThomas@gmail.com>
@@ -22,6 +21,8 @@ from fnmatch import fnmatch
 from multiprocessing.dummy import Pool
 from time import time
 
+from workflow import Workflow
+
 from repos import (
     Repo,
     enumerate_worktrees,
@@ -30,7 +31,6 @@ from repos import (
     get_search_dirs_from_env,
     save_config_hash,
 )
-from workflow import Workflow
 
 # How many search threads to run at the same time
 CONCURRENT_SEARCHES = 4
@@ -94,9 +94,9 @@ def find_git_repos(dirpath, excludes, depth, uid, gids, name_for_parent=1):
     cmd += ["-name", ".git", "-print"]
     try:
         output = subprocess.check_output(cmd)
-    except Exception as err:
-        log.exception("failed: %r", err)
-        raise err
+    except Exception:
+        log.exception("failed")
+        raise
 
     output = [
         os.path.dirname(s.strip()) for s in decode(output).split("\n") if s.strip()

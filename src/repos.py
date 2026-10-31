@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# encoding: utf-8
 #
 # Copyright (c) 2026 Sherif Abdel-Naby <sherifabdlnaby@gmail.com>
 # Copyright (c) 2022 Thomas Harr <xDevThomas@gmail.com>
@@ -77,7 +76,7 @@ class AttrDict(dict):
     """Access dictionary keys as attributes."""
 
     def __init__(self, *args, **kwargs):
-        super(AttrDict, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.__dict__ = self
 
 
@@ -225,7 +224,7 @@ def repo_url(path):
     log.debug("remotes=%s", remotes)
     if remote_name not in remotes:
         notify(
-            "No remote named {}".format(remote_name),
+            f"No remote named {remote_name}",
             "Check your settings",
             "Available remotes: {}".format(", ".join(remotes)),
             "Sosumi",
@@ -336,9 +335,7 @@ def do_open(opts):
     app = all_apps.get(opts.appkey)
     if app is None:
         print(
-            "App {} not set. Configure this workflow in Alfred Preferences.".format(
-                opts.appkey
-            )
+            f"App {opts.appkey} not set. Configure this workflow in Alfred Preferences."
         )
         return 0
 
@@ -373,7 +370,7 @@ def do_search(repos, opts):
     for key, (mode, path) in apps.items():
         name = app_display_name(mode, path)
         if name:
-            subtitles[key] = "Open in {}".format(name)
+            subtitles[key] = f"Open in {name}"
             valid[key] = True
         else:
             subtitles[key] = (
@@ -423,21 +420,18 @@ def do_search(repos, opts):
             if (not expanded and wt_count)
             else ""
         )
-        branch_info = (
-            "{} {}{}  |  ".format(BRANCH_ICON, r.branch, wt_hint) if r.branch else ""
-        )
+        branch_info = f"{BRANCH_ICON} {r.branch}{wt_hint}  |  " if r.branch else ""
 
         icon = "icon.png"
         if os.path.isfile(os.path.dirname(r.path) + "/" + ".alfred-repos-icon.png"):
             icon = os.path.dirname(r.path) + "/" + ".alfred-repos-icon.png"
 
-        def compose(app_subtitle):
-            sep = "  | " if branch_info else "  |  "
-            return "{}{}{}{}".format(app_subtitle, sep, branch_info, pretty_path)
+        sep = "  | " if branch_info else "  |  "
+        subtitle_tail = f"{sep}{branch_info}{pretty_path}"
 
         it = wf.add_item(
             r.name,
-            compose(subtitles.get("default", "")),
+            subtitles.get("default", "") + subtitle_tail,
             arg=r.path,
             uid=r.path,
             valid=valid.get("default", False),
@@ -452,7 +446,7 @@ def do_search(repos, opts):
                 continue
             mod = it.add_modifier(
                 key.replace("_", "+"),
-                compose(subtitles[key]),
+                subtitles[key] + subtitle_tail,
                 arg=r.path,
                 valid=valid[key],
             )
