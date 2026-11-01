@@ -37,7 +37,7 @@ Merging to `main` with a bump label (`major` / `minor` / `patch`) tags, builds t
 Changing tools, tasks, env, mise hooks, or pre-commit hooks? Edit the config, don't bolt on scripts, then run `mise run check`. Where things live:
 
 - **`mise.toml`**: the source of truth for `[tools]`, `[tasks]`, `[env]`/`[vars]`, `[settings]`, `[hooks]`, and prerequisite `[doctor.checks]`.
-- **`mise.lock`**: resolved versions plus checksums for every platform. Commit it; regenerate with `mise lock` after a `[tools]` change.
+- **`mise.lock`**: resolved versions plus checksums for every platform. Commit it, and the dependency graphs it keeps in `.mise/locks/` for Python-packaged tools; regenerate both with `mise lock` after a `[tools]` change.
 - **`.config/mise/`**: project-local state, like the gitignored setup stamp the `setup`/`enter` hooks read. File tasks (for logic longer than a few lines) live in `.config/mise/tasks/`.
 - **`.config/hk.pkl`**: the pre-commit and `check` pipeline (linters and formatters, in Pkl). Add or edit a lint step here, in the commit or push tier; linter configs live beside it in `.config/` (zizmor's stays at `.github/zizmor.yml`).
 
